@@ -113,8 +113,18 @@ Final Fatigue Factor: {simulation_result['final_fatigue_factor']}
     return response.text
 
 # -------------------------------
-# API ROUTE
+# API ROUTES
 # -------------------------------
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({
+        "message": "VallamAI Backend Server",
+        "status": "running",
+        "endpoints": {
+            "simulate": "POST /simulate - Run boat race simulation"
+        }
+    })
+
 @app.route("/simulate", methods=["POST"])
 def simulate():
 
