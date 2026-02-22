@@ -117,7 +117,7 @@ Final Fatigue Factor: {simulation_result['final_fatigue_factor']}
 # -------------------------------
 # API ROUTES
 # -------------------------------
-@app.route("/", methods=["GET"]):
+@app.route("/", methods=["GET"])
 def index():
     # Serve index.html from the current directory ('.')
     return send_from_directory('.', 'index.html')
