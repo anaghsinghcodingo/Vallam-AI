@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,send_from_directory
 import numpy as np
 import google.generativeai as genai
 import os
@@ -117,15 +117,11 @@ Final Fatigue Factor: {simulation_result['final_fatigue_factor']}
 # -------------------------------
 # API ROUTES
 # -------------------------------
-@app.route("/", methods=["GET"])
-def home():
-    return jsonify({
-        "message": "VallamAI Backend Server",
-        "status": "running",
-        "endpoints": {
-            "simulate": "POST /simulate - Run boat race simulation"
-        }
-    })
+@app.route("/", methods=["GET"]):
+def index():
+    # Serve index.html from the current directory ('.')
+    return send_from_directory('.', 'index.html')
+
 
 @app.route("/simulate", methods=["POST"])
 def simulate():
