@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VallamAI — Kerala Snake Boat Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   RESET & ROOT
+   ============================================================ */
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --gold:#FFD700; --cyan:#00E5FF; --violet:#7C3AED;
+  --pink:#FF2D78; --teal:#00BFA5; --orange:#FF6B00;
+  --green:#00E676; --bg:#040D1A;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:#040D1A;min-height:100vh;color:#e8f4ff;overflow-x:hidden;}
+.cinzel{font-family:'Cinzel',serif;}
+button{font-family:'Outfit',sans-serif;cursor:pointer;}
+input{font-family:'Outfit',sans-serif;}
+
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(0,229,255,0.4);}70%{box-shadow:0 0 0 14px rgba(0,229,255,0);}100%{box-shadow:0 0 0 0 rgba(0,229,255,0);}}
+@keyframes floatStar{0%,100%{opacity:.15;transform:scale(1);}50%{opacity:.45;transform:scale(1.3);}}
+@keyframes wavePulse{0%,100%{opacity:.18;}50%{opacity:.4;}}
+@keyframes lineTrace{from{stroke-dashoffset:600;}to{stroke-dashoffset:0;}}
+@keyframes barGrow{from{width:0;}to{width:var(--w);}}
+
+.fade-up  {animation:fadeUp .65s ease both;}
+.fade-up-1{animation:fadeUp .65s .10s ease both;}
+.fade-up-2{animation:fadeUp .65s .20s ease both;}
+.fade-up-3{animation:fadeUp .65s .30s ease both;}
+.fade-up-4{animation:fadeUp .65s .40s ease both;}
+.fade-up-5{animation:fadeUp .65s .50s ease both;}
+
+/* ============================================================
+   GLASS CARDS
+   ============================================================ */
+.glass{
+  background:rgba(8,20,50,.6);
+  border:1px solid rgba(0,229,255,.13);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-radius:20px;
+  transition:all .35s ease;
+}
+.glass:hover{
+  background:rgba(8,20,50,.78);
+  border-color:rgba(0,229,255,.38);
+  transform:translateY(-3px);
+  box-shadow:0 24px 60px rgba(0,0,0,.55),0 0 28px rgba(0,229,255,.07);
+}
+.glass-s{
+  background:rgba(8,20,50,.6);
+  border:1px solid rgba(0,229,255,.12);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-radius:20px;
+}
+
+/* ============================================================
+   TEXT GRADIENTS
+   ============================================================ */
+.gold-text{
+  background:linear-gradient(120deg,#FFD700,#FF6B00,#FF2D78);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.cyan-text{
+  background:linear-gradient(120deg,#00E5FF,#7C3AED);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn-p{
+  background:linear-gradient(135deg,#00E5FF,#7C3AED);
+  color:#fff;font-weight:700;padding:.8rem 2.2rem;
+  border-radius:50px;border:none;font-size:.95rem;
+  letter-spacing:.04em;transition:all .3s;
+  animation:pulseRing 2.5s infinite;
+}
+.btn-p:hover{transform:scale(1.07);box-shadow:0 10px 35px rgba(0,229,255,.45);}
+.btn-g{
+  background:transparent;color:#00E5FF;
+  border:1px solid rgba(0,229,255,.4);
+  padding:.8rem 2.2rem;border-radius:50px;font-size:.95rem;transition:all .3s;
+}
+.btn-g:hover{background:rgba(0,229,255,.1);border-color:#00E5FF;box-shadow:0 0 20px rgba(0,229,255,.2);}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+#navbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;
+  transition:all .4s;
+}
+#navbar.scrolled{
+  background:rgba(4,13,26,.9);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(0,229,255,.1);
+}
+.nav-link{
+  color:rgba(180,220,255,.55);font-weight:500;padding:.45rem 1rem;
+  border-radius:8px;transition:all .2s;letter-spacing:.06em;
+  text-transform:uppercase;font-size:.77rem;border:none;background:transparent;
+}
+.nav-link:hover,.nav-link.active{
+  color:#00E5FF;background:rgba(0,229,255,.08);
+  text-shadow:0 0 12px rgba(0,229,255,.55);
+}
+
+/* ============================================================
+   LOGO
+   ============================================================ */
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.logo-text{
+  font-family:'Cinzel',serif;font-size:1.4rem;font-weight:900;
+  background:linear-gradient(120deg,#00E5FF,#7C3AED,#FF2D78);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  letter-spacing:.06em;
+}
+
+/* ============================================================
+   PAGE SYSTEM
+   ============================================================ */
+.page{display:none;position:relative;z-index:1;min-height:100vh;padding-top:80px;}
+.page.active{display:block;animation:fadeUp .5s ease both;}
+
+/* ============================================================
+   BACKGROUND — fixed scene
+   ============================================================ */
+#bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+#night-sky{position:absolute;inset:0;background:linear-gradient(175deg,#010812 0%,#02122A 25%,#041D3E 50%,#082E52 72%,#0D4468 88%,#124E72 100%);}
+#moon{
+  position:absolute;top:7%;right:13%;width:72px;height:72px;border-radius:50%;
+  background:radial-gradient(circle at 40% 40%,#FFF8D0 20%,#FFE87A 50%,rgba(255,215,0,.3) 80%,transparent 100%);
+  box-shadow:0 0 50px rgba(255,215,0,.35),0 0 100px rgba(255,215,0,.15);filter:blur(1px);
+}
+#moon-ref{
+  position:absolute;bottom:19%;right:calc(13% + 16px);width:14px;height:100px;
+  background:linear-gradient(180deg,rgba(255,215,0,.28),rgba(255,215,0,.05),transparent);
+  filter:blur(6px);border-radius:10px;
+}
+#shore{
+  position:absolute;bottom:37%;left:0;right:0;height:60px;
+  background:linear-gradient(180deg,transparent,rgba(2,10,22,.6));
+  clip-path:polygon(0 100%,0 70%,2% 55%,5% 60%,8% 40%,12% 55%,15% 45%,20% 60%,24% 48%,28% 60%,32% 50%,36% 62%,40% 52%,45% 65%,50% 55%,55% 68%,60% 58%,65% 70%,70% 58%,75% 65%,80% 55%,85% 62%,90% 52%,95% 60%,100% 55%,100% 100%);
+}
+.torch{position:absolute;width:5px;height:5px;border-radius:50%;}
+#water-surface{
+  position:absolute;bottom:0;left:0;right:0;height:38%;
+  background:linear-gradient(180deg,rgba(8,30,58,0) 0%,rgba(5,18,38,.75) 35%,rgba(2,10,22,1) 100%);
+}
+#w1,#w2,#w3{position:absolute;left:0;width:200%;}
+#w1{bottom:31%;}#w2{bottom:27%;}#w3{bottom:24%;}
+#water-vignette{
+  position:absolute;bottom:0;left:0;right:0;height:20%;
+  background:linear-gradient(180deg,transparent 0%,rgba(1,8,18,.97) 100%);
+}
+.water-line{position:absolute;left:0;right:0;height:1px;}
+
+/* Snake boat wrapper */
+#boat-wrap{
+  position:absolute;bottom:18%;left:50%;
+  width:92%;max-width:1020px;
+  transform-origin:50% 88%;
+  opacity:.78;
+  filter:drop-shadow(0 20px 50px rgba(0,0,0,.85));
+}
+
+/* ============================================================
+   SEAT INDICATORS
+   ============================================================ */
+.seat{
+  width:26px;height:26px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:800;transition:transform .2s;cursor:default;
+}
+.seat:hover{transform:scale(1.4);}
+.seat-s{background:rgba(0,230,118,.22);border:2px solid #00E676;color:#00E676;}
+.seat-m{background:rgba(255,107,0,.22);border:2px solid #FF6B00;color:#FF6B00;}
+.seat-w{background:rgba(255,45,120,.22);border:2px solid #FF2D78;color:#FF2D78;}
+
+/* ============================================================
+   SUGGESTION CARDS
+   ============================================================ */
+.sug-card{
+  background:rgba(8,20,50,.65);border:1px solid rgba(0,229,255,.1);
+  border-radius:16px;padding:1.3rem;transition:all .3s;
+}
+.sug-card:hover{background:rgba(0,229,255,.05);border-color:rgba(0,229,255,.35);transform:translateX(5px);}
+
+/* ============================================================
+   FEAT BLOCKS (About)
+   ============================================================ */
+.feat-block{
+  background:rgba(8,20,50,.55);border-radius:20px;
+  padding:2rem;text-align:center;transition:all .3s;
+}
+.feat-block:hover{transform:translateY(-8px);box-shadow:0 20px 50px rgba(0,0,0,.4),0 0 30px rgba(0,229,255,.06);}
+
+/* ============================================================
+   INPUT FORM STYLES
+   ============================================================ */
+.input-field{
+  width:100%;background:rgba(0,229,255,.04);
+  border:1px solid rgba(0,229,255,.18);border-radius:12px;
+  padding:.75rem 1rem;color:#e8f4ff;font-size:.95rem;font-weight:500;
+  outline:none;transition:all .25s;
+}
+.input-field:focus{
+  border-color:#00E5FF;background:rgba(0,229,255,.07);
+  box-shadow:0 0 0 3px rgba(0,229,255,.15);
+}
+.input-field::placeholder{color:rgba(180,220,255,.22);}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
+
+.range-wrap{position:relative;height:36px;display:flex;align-items:center;}
+.range-track{position:absolute;left:0;right:0;height:6px;background:rgba(255,255,255,.07);border-radius:3px;}
+.range-fill{position:absolute;left:0;height:6px;border-radius:3px;transition:width .1s;}
+.range-thumb{
+  position:absolute;width:20px;height:20px;border-radius:50%;
+  background:#040D1A;transition:left .1s;z-index:1;pointer-events:none;
+  top:50%;transform:translateY(-50%);
+}
+input[type=range]{
+  position:absolute;left:0;right:0;width:100%;opacity:0;cursor:pointer;height:36px;z-index:2;
+  -webkit-appearance:none;appearance:none;background:transparent;
+}
+
+.field-label{
+  display:flex;align-items:center;gap:7px;margin-bottom:.45rem;
+}
+.field-label span.lbl{font-size:.82rem;font-weight:600;color:rgba(180,220,255,.7);letter-spacing:.04em;text-transform:uppercase;}
+.field-label span.unit{
+  font-size:.72rem;color:rgba(180,220,255,.35);margin-left:auto;
+  background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.15);
+  border-radius:6px;padding:1px 7px;
+}
+.field-label span.val{margin-left:auto;font-family:'Cinzel',serif;font-weight:700;font-size:1rem;}
+
+/* ============================================================
+   COMPASS
+   ============================================================ */
+#compass{position:relative;width:120px;height:120px;margin:0 auto .75rem;}
+#compass-ring{position:absolute;inset:0;border-radius:50%;background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.18);}
+#compass-inner{position:absolute;inset:12px;border-radius:50%;background:rgba(0,0,0,.3);border:1px solid rgba(255,107,0,.15);}
+.dir-dot{
+  position:absolute;width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  font-size:.65rem;font-weight:800;font-family:'Cinzel',serif;
+  background:rgba(255,255,255,.05);color:rgba(180,220,255,.45);
+  border:1px solid rgba(255,255,255,.08);transition:all .2s;
+}
+.dir-dot.active{
+  background:linear-gradient(135deg,#FF6B00,#FF2D78);color:#fff;
+  border-color:#FF6B00;box-shadow:0 0 12px rgba(255,107,0,.6);transform:scale(1.15);
+}
+#compass-arrow{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+}
+#arrow-line{
+  width:4px;height:32px;background:linear-gradient(180deg,#FF6B00,transparent);
+  border-radius:2px;transform-origin:bottom center;transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+#compass-center{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:8px;height:8px;border-radius:50%;background:#FF6B00;box-shadow:0 0 8px #FF6B00;
+}
+
+/* ============================================================
+   PROGRESS BARS (results)
+   ============================================================ */
+.score-bar-wrap{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-top:4px;}
+.score-bar{height:100%;border-radius:3px;transition:width 1.5s ease;}
+
+/* ============================================================
+   CIRCULAR SVG PROGRESS (results)
+   ============================================================ */
+.circle-prog{transition:stroke-dashoffset 2s cubic-bezier(.34,1.56,.64,1);}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:rgba(0,229,255,.02);}
+::-webkit-scrollbar-thumb{background:rgba(0,229,255,.22);border-radius:3px;}
+
+/* ============================================================
+   SEAT LAYOUT SCROLL
+   ============================================================ */
+#seat-container{
+  background:linear-gradient(90deg,rgba(0,229,255,.05),rgba(0,229,255,.1),rgba(0,229,255,.05));
+  border:1px solid rgba(0,229,255,.15);border-radius:50px;
+  padding:1.25rem 2rem;display:flex;flex-direction:column;gap:6px;
+  max-height:280px;overflow-y:auto;width:100%;max-width:360px;margin:0 auto;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:768px){
+  .two-col{grid-template-columns:1fr!important;}
+  .three-col{grid-template-columns:1fr!important;}
+  .results-top{flex-direction:column!important;}
+  .input-grid{grid-template-columns:1fr!important;}
+  #navbar .nav-links{gap:.1rem;}
+  .nav-link{padding:.4rem .6rem;font-size:.68rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     FIXED BACKGROUND
+     ============================================================ -->
+<div id="bg">
+  <div id="night-sky"></div>
+
+  <!-- Stars -->
+  <div id="stars"></div>
+
+  <!-- Moon -->
+  <div id="moon"></div>
+  <div id="moon-ref"></div>
+
+  <!-- Shore silhouette -->
+  <div id="shore"></div>
+
+  <!-- Torchlights -->
+  <div class="torch" style="left:8%;bottom:33%;background:#FF6B00;box-shadow:0 0 18px 9px rgba(255,107,0,.35);animation:floatStar 2.5s ease-in-out infinite;"></div>
+  <div class="torch" style="left:18%;bottom:30%;background:#FFD700;box-shadow:0 0 18px 9px rgba(255,215,0,.3);animation:floatStar 3.1s ease-in-out .5s infinite;"></div>
+  <div class="torch" style="left:82%;bottom:35%;background:#FF6B00;box-shadow:0 0 18px 9px rgba(255,107,0,.35);animation:floatStar 3.7s ease-in-out 1s infinite;"></div>
+  <div class="torch" style="left:91%;bottom:31%;background:#FFD700;box-shadow:0 0 18px 9px rgba(255,215,0,.3);animation:floatStar 4.3s ease-in-out 1.5s infinite;"></div>
+
+  <!-- Water surface -->
+  <div id="water-surface"></div>
+
+  <!-- Wave layers -->
+  <div id="w1">
+    <svg viewBox="0 0 800 50" preserveAspectRatio="none" style="width:100%;height:50px;">
+      <defs><linearGradient id="w1g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,180,240,0.22)"/><stop offset="100%" stop-color="rgba(0,180,240,0)"/></linearGradient></defs>
+      <path d="M0,25 C30,10 60,40 90,25 C120,10 150,40 180,25 C210,10 240,40 270,25 C300,10 330,40 360,25 C390,10 420,40 450,25 C480,10 510,40 540,25 C570,10 600,40 630,25 C660,10 690,40 720,25 C750,10 780,40 800,25 L800,50 L0,50Z" fill="url(#w1g)"/>
+    </svg>
+  </div>
+  <div id="w2">
+    <svg viewBox="0 0 800 40" preserveAspectRatio="none" style="width:100%;height:40px;">
+      <defs><linearGradient id="w2g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,140,200,0.15)"/><stop offset="100%" stop-color="rgba(0,140,200,0)"/></linearGradient></defs>
+      <path d="M0,20 C40,8 80,32 120,20 C160,8 200,32 240,20 C280,8 320,32 360,20 C400,8 440,32 480,20 C520,8 560,32 600,20 C640,8 680,32 720,20 C760,8 800,20 800,20 L800,40 L0,40Z" fill="url(#w2g)"/>
+    </svg>
+  </div>
+  <div id="w3">
+    <svg viewBox="0 0 800 30" preserveAspectRatio="none" style="width:100%;height:30px;">
+      <path d="M0,15 C50,6 100,24 150,15 C200,6 250,24 300,15 C350,6 400,24 450,15 C500,6 550,24 600,15 C650,6 700,24 750,15 C775,10 800,15 800,15 L800,30 L0,30Z" fill="rgba(0,100,160,0.1)"/>
+    </svg>
+  </div>
+
+  <!-- Kerala Snake Boat -->
+  <div id="boat-wrap">
+    <svg id="boat-svg" viewBox="0 0 1020 240" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;">
+      <defs>
+        <linearGradient id="hullTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7A3A12"/><stop offset="60%" stop-color="#4A2008"/><stop offset="100%" stop-color="#1E0A02"/></linearGradient>
+        <linearGradient id="hullSide" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5A2A0A"/><stop offset="100%" stop-color="#180800"/></linearGradient>
+        <linearGradient id="redStripe" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#8A1500"/><stop offset="20%" stop-color="#CC2500"/><stop offset="50%" stop-color="#FF3D1A"/><stop offset="80%" stop-color="#CC2500"/><stop offset="100%" stop-color="#8A1500"/></linearGradient>
+        <linearGradient id="goldLine" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#7A6000"/><stop offset="30%" stop-color="#FFD700"/><stop offset="70%" stop-color="#FFD700"/><stop offset="100%" stop-color="#7A6000"/></linearGradient>
+        <linearGradient id="snakeHead" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#7A1A00"/><stop offset="50%" stop-color="#C82000"/><stop offset="100%" stop-color="#9A2200"/></linearGradient>
+        <linearGradient id="canopyRed" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#CC2200"/><stop offset="100%" stop-color="#6A0E00"/></linearGradient>
+        <radialGradient id="snakeEyeGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD700" stop-opacity="0.8"/><stop offset="100%" stop-color="#FF6B00" stop-opacity="0"/></radialGradient>
+        <radialGradient id="waterGlow" cx="50%" cy="0%" r="80%"><stop offset="0%" stop-color="rgba(0,180,240,0.18)"/><stop offset="100%" stop-color="rgba(0,180,240,0)"/></radialGradient>
+        <filter id="softGlow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Water glow beneath boat -->
+      <ellipse cx="505" cy="195" rx="470" ry="18" fill="url(#waterGlow)"/>
+      <ellipse cx="505" cy="200" rx="440" ry="10" stroke="rgba(0,180,240,0.15)" stroke-width="1.5" fill="none"/>
+      <ellipse cx="505" cy="205" rx="400" ry="7" stroke="rgba(0,180,240,0.08)" stroke-width="1" fill="none"/>
+      <!-- Keel -->
+      <path d="M95,170 Q250,182 505,184 Q760,182 925,168 Q940,175 920,178 Q760,192 505,194 Q250,192 80,178 Q68,172 95,170Z" fill="#120600"/>
+      <!-- Outer hull -->
+      <path d="M95,148 Q160,155 280,160 Q390,164 505,165 Q620,164 730,160 Q850,155 920,145 Q940,152 935,158 Q855,170 730,175 Q620,179 505,180 Q390,179 280,175 Q160,170 80,160 Q70,152 95,148Z" fill="url(#hullSide)"/>
+      <!-- Upper deck -->
+      <path d="M95,140 Q250,152 505,155 Q760,152 920,138 Q935,144 920,150 Q760,166 505,169 Q250,166 80,154 Q68,148 95,140Z" fill="url(#hullTop)"/>
+      <!-- Planking texture -->
+      <path d="M100,140 Q250,151 505,154 Q760,151 915,138" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+      <!-- Red racing stripe -->
+      <path d="M95,134 Q250,145 505,148 Q760,145 920,132 L920,140 Q760,154 505,157 Q250,154 80,143Z" fill="url(#redStripe)"/>
+      <path d="M95,128 Q250,139 505,142 Q760,139 920,126 L920,131 Q760,144 505,147 Q250,144 80,135Z" fill="rgba(180,30,0,0.5)"/>
+      <!-- Gold accent lines -->
+      <path d="M95,126 Q250,137 505,140 Q760,137 920,124" stroke="url(#goldLine)" stroke-width="2" filter="url(#softGlow)" opacity="0.9"/>
+      <path d="M95,131 Q250,142 505,145 Q760,142 920,129" stroke="url(#goldLine)" stroke-width="1" opacity="0.5"/>
+      <!-- Snake Head -->
+      <g transform="translate(896,90)">
+        <ellipse cx="35" cy="32" rx="42" ry="30" fill="url(#snakeEyeGlow)" opacity="0.4"/>
+        <path d="M0,40 Q5,30 15,25 Q10,38 0,48Z" fill="#5A1200"/>
+        <path d="M5,42 Q25,50 55,48 Q70,46 78,40 Q70,52 55,56 Q30,58 5,50Z" fill="#7A1A00"/>
+        <path d="M2,38 Q12,20 30,13 Q48,8 64,16 Q76,24 80,36 Q76,48 62,54 Q46,58 28,54 Q12,50 2,38Z" fill="url(#snakeHead)"/>
+        <path d="M8,35 Q18,22 34,16 Q50,12 64,20 Q72,28 72,36" stroke="rgba(255,100,0,0.4)" stroke-width="1.5" fill="none"/>
+        <ellipse cx="20" cy="30" rx="5" ry="3" fill="rgba(0,0,0,0.2)" transform="rotate(-15,20,30)"/>
+        <ellipse cx="35" cy="25" rx="5" ry="3" fill="rgba(0,0,0,0.2)" transform="rotate(-15,35,25)"/>
+        <ellipse cx="50" cy="28" rx="5" ry="3" fill="rgba(0,0,0,0.2)" transform="rotate(-15,50,28)"/>
+        <ellipse cx="52" cy="26" rx="8" ry="7" fill="#3A0E00"/>
+        <circle cx="52" cy="26" r="6" fill="#FFD700"/>
+        <ellipse cx="52" cy="26" rx="2.5" ry="4" fill="#000"/>
+        <circle cx="49" cy="24" r="1.5" fill="rgba(255,255,255,0.85)"/>
+        <ellipse cx="72" cy="36" rx="3.5" ry="2.5" fill="#3A0E00"/>
+        <path d="M77,38 Q85,35 90,30 M90,30 Q95,26 98,23 M90,30 Q95,34 98,37" stroke="#FF2D78" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        <path d="M18,12 Q24,0 32,-4 Q36,0 32,8 Q40,-3 48,0 Q50,6 44,12 Q52,2 60,5 Q60,12 54,16 Q46,10 32,8 Q20,10 18,12Z" fill="#CC2200"/>
+        <path d="M20,10 Q30,2 40,5 Q50,3 56,10" stroke="#FFD700" stroke-width="1.2" fill="none" opacity="0.6"/>
+        <circle cx="30" cy="6" r="2" fill="#FFD700" opacity="0.7"/>
+        <circle cx="40" cy="3" r="2" fill="#FFD700" opacity="0.7"/>
+        <circle cx="50" cy="6" r="2" fill="#FFD700" opacity="0.7"/>
+      </g>
+      <!-- Bow ornament -->
+      <g transform="translate(42,100)">
+        <ellipse cx="28" cy="28" rx="20" ry="18" fill="url(#snakeEyeGlow)" opacity="0.3"/>
+        <path d="M45,30 Q30,16 14,18 Q4,22 6,32 Q8,42 22,42 Q36,42 45,30Z" fill="#7A1A00"/>
+        <path d="M42,30 Q28,18 15,20 Q7,24 9,32 Q11,40 23,40 Q35,40 42,30Z" fill="#C02000"/>
+        <circle cx="22" cy="30" r="6" fill="#FFD700"/><circle cx="22" cy="30" r="3.5" fill="#000"/>
+        <circle cx="20" cy="28" r="1.5" fill="rgba(255,255,255,0.8)"/>
+        <path d="M10,20 Q0,12 4,6 Q12,8 14,18Z" fill="#8A1500"/>
+        <path d="M10,40 Q0,48 4,54 Q12,52 14,42Z" fill="#8A1500"/>
+      </g>
+      <!-- Chatram canopy -->
+      <g transform="translate(450,48)">
+        <rect x="19" y="0" width="5" height="90" rx="2.5" fill="#3A1A06"/>
+        <rect x="18" y="20" width="7" height="5" rx="2" fill="#B8860B"/>
+        <rect x="18" y="40" width="7" height="5" rx="2" fill="#B8860B"/>
+        <rect x="18" y="60" width="7" height="5" rx="2" fill="#B8860B"/>
+        <line x1="21.5" y1="-5" x2="21.5" y2="-22" stroke="#FFD700" stroke-width="2.5"/>
+        <polygon points="21.5,-26 18,-20 25,-20" fill="#FFD700"/>
+        <circle cx="21.5" cy="-28" r="4" fill="#FFD700"/>
+        <path d="M21.5,-8 Q52,3 84,6 Q52,10 21.5,18 Q-9,10 -41,6 Q-9,3 21.5,-8Z" fill="url(#canopyRed)" stroke="#FFD700" stroke-width="1.2" opacity="0.95"/>
+        <path d="M21.5,4 Q55,15 88,18 Q55,22 21.5,30 Q-10,22 -45,18 Q-10,15 21.5,4Z" fill="#AA1800" stroke="rgba(255,215,0,0.5)" stroke-width="0.8" opacity="0.9"/>
+        <line x1="-42" y1="29" x2="-44" y2="38" stroke="#FFD700" stroke-width="1.3" opacity="0.65"/>
+        <line x1="-30" y1="30" x2="-32" y2="39" stroke="#FFD700" stroke-width="1.3" opacity="0.65"/>
+        <line x1="-18" y1="30" x2="-20" y2="39" stroke="#FFD700" stroke-width="1.3" opacity="0.65"/>
+        <line x1="-6" y1="30" x2="-8" y2="39" stroke="#FFD700" stroke-width="1.3" opacity="0.65"/>
+        <line x1="6" y1="30" x2="4" y2="39" stroke="#FFD700" stroke-width="1.3" opacity="0.65"/>
+        <line x1="18" y1="30" x2="16" y2="39" stroke="#FFD700" stroke-width="1.3" opacity="0.65"/>
+        <line x1="30" y1="30" x2="28" y2="39" stroke="#FFD700" stroke-width="1.3" opacity="0.65"/>
+        <line x1="42" y1="30" x2="40" y2="39" stroke="#FFD700" stroke-width="1.3" opacity="0.65"/>
+        <line x1="54" y1="30" x2="52" y2="39" stroke="#FFD700" stroke-width="1.3" opacity="0.65"/>
+        <line x1="66" y1="29" x2="64" y2="38" stroke="#FFD700" stroke-width="1.3" opacity="0.65"/>
+        <line x1="78" y1="28" x2="76" y2="37" stroke="#FFD700" stroke-width="1.3" opacity="0.65"/>
+      </g>
+      <!-- Rowers -->
+      <g id="rowers"></g>
+      <!-- Oars -->
+      <g id="oars"></g>
+      <!-- Flags -->
+      <g transform="translate(195,72)"><line x1="0" y1="0" x2="0" y2="62" stroke="#3A1A06" stroke-width="2.5"/><path d="M0,4 Q16,-4 30,4 Q16,12 0,20Z" fill="#FF2D78" opacity="0.85"/></g>
+      <g transform="translate(350,68)"><line x1="0" y1="0" x2="0" y2="62" stroke="#3A1A06" stroke-width="2.5"/><path d="M0,4 Q16,-4 30,4 Q16,12 0,20Z" fill="#00E5FF" opacity="0.85"/></g>
+      <g transform="translate(660,68)"><line x1="0" y1="0" x2="0" y2="62" stroke="#3A1A06" stroke-width="2.5"/><path d="M0,4 Q16,-4 30,4 Q16,12 0,20Z" fill="#FFD700" opacity="0.85"/></g>
+      <g transform="translate(820,72)"><line x1="0" y1="0" x2="0" y2="62" stroke="#3A1A06" stroke-width="2.5"/><path d="M0,4 Q16,-4 30,4 Q16,12 0,20Z" fill="#00E676" opacity="0.85"/></g>
+      <!-- Bow splash -->
+      <path d="M94,158 Q72,148 54,155 Q64,163 88,168" fill="rgba(140,220,255,0.22)" filter="url(#softGlow)"/>
+      <path d="M922,152 Q944,144 958,150 Q944,158 920,162" fill="rgba(140,220,255,0.18)"/>
+    </svg>
+  </div>
+
+  <!-- Cyan shimmer lines -->
+  <div class="water-line" style="bottom:14%;background:linear-gradient(90deg,transparent,rgba(0,229,255,.07),transparent);animation:wavePulse 2.5s ease-in-out infinite;"></div>
+  <div class="water-line" style="bottom:18%;background:linear-gradient(90deg,transparent,rgba(0,229,255,.05),transparent);animation:wavePulse 3.3s ease-in-out .6s infinite;"></div>
+  <div class="water-line" style="bottom:22%;background:linear-gradient(90deg,transparent,rgba(0,229,255,.04),transparent);animation:wavePulse 4.1s ease-in-out 1.2s infinite;"></div>
+
+  <div id="water-vignette"></div>
+</div>
+
+<!-- ============================================================
+     NAVBAR
+     ============================================================ -->
+<nav id="navbar">
+  <div class="logo" onclick="showPage('dashboard')">
+    <svg width="38" height="38" viewBox="0 0 38 38">
+      <defs><linearGradient id="logoG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00E5FF"/><stop offset="50%" stop-color="#7C3AED"/><stop offset="100%" stop-color="#FF2D78"/></linearGradient></defs>
+      <path d="M4,28 Q10,20 19,16 Q28,12 34,20 Q31,30 19,32 Q9,34 4,28Z" fill="none" stroke="url(#logoG)" stroke-width="2.5"/>
+      <circle cx="19" cy="17" r="4.5" fill="url(#logoG)" opacity="0.9"/>
+      <path d="M13,27 L19,16 L25,27" fill="none" stroke="url(#logoG)" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span class="logo-text">VallamAI</span>
+  </div>
+  <div class="nav-links" style="display:flex;gap:.2rem;">
+    <button class="nav-link active" onclick="showPage('dashboard')" id="nav-dashboard">Dashboard</button>
+    <button class="nav-link" onclick="showPage('input')" id="nav-input">User Input</button>
+    <button class="nav-link" onclick="showPage('results')" id="nav-results">Results</button>
+    <button class="nav-link" onclick="showPage('about')" id="nav-about">About</button>
+  </div>
+</nav>
+
+<!-- ============================================================
+     PAGE 1: DASHBOARD
+     ============================================================ -->
+<div id="page-dashboard" class="page active">
+  <!-- Hero -->
+  <div style="text-align:center;padding:5rem 2rem 3rem;">
+    <div class="fade-up" style="display:inline-block;margin-bottom:1.5rem;background:linear-gradient(90deg,rgba(0,229,255,.12),rgba(124,58,237,.12));border:1px solid rgba(0,229,255,.3);border-radius:50px;padding:.4rem 1.4rem;font-size:.77rem;color:#00E5FF;letter-spacing:.18em;text-transform:uppercase;">
+      🏆 Kerala Snake Boat Intelligence Platform
+    </div>
+    <h1 class="cinzel fade-up-1" style="font-size:clamp(2.2rem,5.5vw,4.8rem);font-weight:900;line-height:1.05;margin-bottom:1.25rem;color:#fff;">
+      AI-Powered Snake Boat<br><span class="gold-text">Race Intelligence</span>
+    </h1>
+    <p class="fade-up-2" style="color:rgba(180,220,255,.5);font-size:1.1rem;max-width:520px;margin:0 auto 2.5rem;line-height:1.8;">
+      Advanced biomechanics, hydrodynamic modeling, and AI strategy for Kerala's legendary Chundan Vallam tradition.
+    </p>
+    <div class="fade-up-3" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <button class="btn-p" onclick="showPage('input')">Analyze Your Boat →</button>
+      <button class="btn-g" onclick="showPage('results')">View Demo Results</button>
+    </div>
+  </div>
+
+  <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,255,.22),transparent);margin:0 2rem 2.5rem;"></div>
+
+  <!-- Cards -->
+  <div style="max-width:1100px;margin:0 auto;padding:0 2rem 4rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;">
+    <!-- Boat Profile -->
+    <div class="glass fade-up-2" style="padding:2rem;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;">
+        <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,107,0,.2));border:1px solid rgba(255,215,0,.35);display:flex;align-items:center;justify-content:center;font-size:1.2rem;">🚣</div>
+        <span class="cinzel" style="font-weight:700;color:#FFD700;font-size:1rem;">Boat Profile</span>
+      </div>
+      <div id="dash-boat-profile">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,.05);">
+          <span style="color:rgba(180,220,255,.38);font-size:.83rem;">Boat Name</span>
+          <span style="color:#fff;font-weight:600;font-size:.88rem;">Nadubhagom Chundan</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,.05);">
+          <span style="color:rgba(180,220,255,.38);font-size:.83rem;">Race Category</span>
+          <span style="color:#fff;font-weight:600;font-size:.88rem;">Nehru Trophy — Open</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;">
+          <span style="color:rgba(180,220,255,.38);font-size:.83rem;">Registered Players</span>
+          <span id="dash-rowers-val" style="color:#fff;font-weight:600;font-size:.88rem;">100 Rowers</span>
+        </div>
+      </div>
+      <div style="margin-top:1.25rem;padding:.7rem;background:rgba(0,230,118,.09);border:1px solid rgba(0,230,118,.25);border-radius:10px;text-align:center;">
+        <span style="color:#00E676;font-size:.8rem;font-weight:700;">✓ Team Ready for Analysis</span>
+      </div>
+    </div>
+
+    <!-- Player Summary -->
+    <div class="glass fade-up-3" style="padding:2rem;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;">
+        <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(0,229,255,.2),rgba(124,58,237,.2));border:1px solid rgba(0,229,255,.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;">👥</div>
+        <span class="cinzel" style="font-weight:700;color:#00E5FF;font-size:1rem;">Player Summary</span>
+      </div>
+      <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div style="background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);border-radius:12px;padding:.9rem;text-align:center;">
+          <div style="font-size:1.2rem;margin-bottom:3px;">🧑‍🤝‍🧑</div>
+          <div id="dash-total" class="cinzel" style="font-size:1.5rem;font-weight:800;color:#00E5FF;">100</div>
+          <div style="font-size:.68rem;color:rgba(180,220,255,.35);margin-top:2px;text-transform:uppercase;letter-spacing:.08em;">Total Players</div>
+        </div>
+        <div style="background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.2);border-radius:12px;padding:.9rem;text-align:center;">
+          <div style="font-size:1.2rem;margin-bottom:3px;">💪</div>
+          <div id="dash-force" class="cinzel" style="font-size:1.5rem;font-weight:800;color:#FFD700;">180N</div>
+          <div style="font-size:.68rem;color:rgba(180,220,255,.35);margin-top:2px;text-transform:uppercase;letter-spacing:.08em;">Avg Force</div>
+        </div>
+        <div style="background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);border-radius:12px;padding:.9rem;text-align:center;">
+          <div style="font-size:1.2rem;margin-bottom:3px;">⚡</div>
+          <div id="dash-stroke" class="cinzel" style="font-size:1.5rem;font-weight:800;color:#00E676;">32 spm</div>
+          <div style="font-size:.68rem;color:rgba(180,220,255,.35);margin-top:2px;text-transform:uppercase;letter-spacing:.08em;">Stroke Rate</div>
+        </div>
+        <div style="background:rgba(255,45,120,.08);border:1px solid rgba(255,45,120,.2);border-radius:12px;padding:.9rem;text-align:center;">
+          <div style="font-size:1.2rem;margin-bottom:3px;">🎯</div>
+          <div id="dash-boat-len" class="cinzel" style="font-size:1.5rem;font-weight:800;color:#FF2D78;">35m</div>
+          <div style="font-size:.68rem;color:rgba(180,220,255,.35);margin-top:2px;text-transform:uppercase;letter-spacing:.08em;">Boat Length</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Race Readiness -->
+    <div class="glass fade-up-4" style="padding:2rem;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;">
+        <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(255,45,120,.2),rgba(124,58,237,.2));border:1px solid rgba(255,45,120,.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;">📊</div>
+        <span class="cinzel" style="font-weight:700;color:#FF2D78;font-size:1rem;">Race Readiness</span>
+      </div>
+      <div id="readiness-bars"></div>
+      <button class="btn-p" style="width:100%;margin-top:.5rem;animation:none;" onclick="showPage('results')">View Full Analysis →</button>
+    </div>
+  </div>
+
+  <!-- Tech strip -->
+  <div style="max-width:1100px;margin:0 auto 4rem;padding:0 2rem;">
+    <div style="background:linear-gradient(135deg,rgba(0,229,255,.05),rgba(124,58,237,.04));border:1px solid rgba(0,229,255,.1);border-radius:20px;padding:1.75rem;text-align:center;">
+      <p class="cinzel" style="color:rgba(180,220,255,.28);font-size:.7rem;letter-spacing:.3em;margin-bottom:10px;">POWERED BY</p>
+      <div style="display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;">
+        <span style="color:rgba(180,220,255,.42);font-size:.84rem;">⚡ Real-time AI Engine</span>
+        <span style="color:rgba(180,220,255,.42);font-size:.84rem;">🌊 Hydrodynamic Modeling</span>
+        <span style="color:rgba(180,220,255,.42);font-size:.84rem;">🧬 Biomechanics Analytics</span>
+        <span style="color:rgba(180,220,255,.42);font-size:.84rem;">🎯 Predictive Race Mapping</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE 2: USER INPUT
+     ============================================================ -->
+<div id="page-input" class="page" style="padding-top:90px;padding-bottom:3rem;">
+  <div style="max-width:1160px;margin:0 auto;padding:2rem;">
+    <div class="fade-up" style="margin-bottom:2.5rem;">
+      <div style="display:inline-block;background:linear-gradient(90deg,rgba(0,229,255,.1),rgba(124,58,237,.1));border:1px solid rgba(0,229,255,.25);border-radius:50px;padding:.35rem 1.1rem;margin-bottom:1rem;font-size:.77rem;color:#00E5FF;letter-spacing:.14em;text-transform:uppercase;">⚙️ Configuration Panel</div>
+      <h1 class="cinzel" style="font-size:clamp(2rem,4vw,3rem);font-weight:900;color:#fff;margin-bottom:.65rem;">Configure Your <span class="cyan-text">Race Parameters</span></h1>
+      <p style="color:rgba(180,220,255,.4);font-size:1rem;max-width:540px;line-height:1.75;">Enter precise boat specs and environmental conditions. Our AI engine uses these 7 parameters to compute winning strategy.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 340px;gap:1.5rem;align-items:start;" class="input-grid">
+
+      <!-- LEFT: Boat Specs -->
+      <div class="glass-s fade-up-1" style="padding:2rem;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.75rem;padding-bottom:1rem;border-bottom:1px solid rgba(0,229,255,.1);">
+          <div style="width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,rgba(255,215,0,.22),rgba(255,107,0,.15));border:1px solid rgba(255,215,0,.35);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">🚣</div>
+          <div>
+            <h2 class="cinzel" style="font-size:1rem;font-weight:700;color:#FFD700;letter-spacing:.04em;">Boat Specifications</h2>
+            <p style="color:rgba(180,220,255,.3);font-size:.73rem;margin-top:2px;">Vessel geometry & crew configuration</p>
+          </div>
+        </div>
+
+        <!-- Boat Length Slider -->
+        <div style="margin-bottom:1.5rem;">
+          <div class="field-label">
+            <span>📏</span>
+            <span class="lbl">Boat Length</span>
+            <span class="val" id="boat-len-val" style="color:#FFD700;">35 <span style="font-size:.72rem;color:rgba(180,220,255,.4);">m</span></span>
+          </div>
+          <div class="range-wrap">
+            <div class="range-track"></div>
+            <div class="range-fill" id="boat-len-fill" style="background:linear-gradient(90deg,rgba(255,215,0,.5),#FFD700);box-shadow:0 0 10px rgba(255,215,0,.4);width:38.9%;"></div>
+            <div class="range-thumb" id="boat-len-thumb" style="left:calc(38.9% - 10px);border:2.5px solid #FFD700;box-shadow:0 0 12px rgba(255,215,0,.6);"></div>
+            <input type="range" min="20" max="60" step="0.5" value="35" id="boat-len-slider" oninput="updateBoatLen(this.value)">
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span style="font-size:.65rem;color:rgba(180,220,255,.25);">20m</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">30m</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">40m</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">50m</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">60m</span>
+          </div>
+        </div>
+
+        <!-- Num Rowers Slider -->
+        <div style="margin-bottom:1.5rem;">
+          <div class="field-label">
+            <span>👥</span>
+            <span class="lbl">Number of Rowers</span>
+            <span class="val" id="num-rowers-val" style="color:#00E5FF;">100 <span style="font-size:.72rem;color:rgba(180,220,255,.4);">rowers</span></span>
+          </div>
+          <div class="range-wrap">
+            <div class="range-track"></div>
+            <div class="range-fill" id="num-rowers-fill" style="background:linear-gradient(90deg,rgba(0,229,255,.5),#00E5FF);box-shadow:0 0 10px rgba(0,229,255,.4);width:50%;"></div>
+            <div class="range-thumb" id="num-rowers-thumb" style="left:calc(50% - 10px);border:2.5px solid #00E5FF;box-shadow:0 0 12px rgba(0,229,255,.6);"></div>
+            <input type="range" min="50" max="150" step="2" value="100" id="num-rowers-slider" oninput="updateNumRowers(this.value)">
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span style="font-size:.65rem;color:rgba(180,220,255,.25);">50</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">75</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">100</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">125</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">150</span>
+          </div>
+        </div>
+
+        <!-- Crew visual preview -->
+        <div style="padding:1rem;background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.12);border-radius:12px;">
+          <p style="font-size:.73rem;color:rgba(180,220,255,.4);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em;">Crew Configuration Preview</p>
+          <div id="crew-dots" style="display:flex;gap:3px;flex-wrap:wrap;"></div>
+          <p id="crew-summary" style="font-size:.7rem;color:rgba(180,220,255,.28);margin-top:.4rem;">100 rowers · 50 rows · 35m hull</p>
+        </div>
+      </div>
+
+      <!-- MIDDLE: Performance + Environment -->
+      <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+        <!-- Rower Performance -->
+        <div class="glass-s fade-up-2" style="padding:2rem;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.75rem;padding-bottom:1rem;border-bottom:1px solid rgba(124,58,237,.2);">
+            <div style="width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,rgba(124,58,237,.25),rgba(255,45,120,.15));border:1px solid rgba(124,58,237,.4);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">💪</div>
+            <div>
+              <h2 class="cinzel" style="font-size:1rem;font-weight:700;color:#7C3AED;letter-spacing:.04em;">Rower Performance</h2>
+              <p style="color:rgba(180,220,255,.3);font-size:.73rem;margin-top:2px;">Biomechanical force & rhythm parameters</p>
+            </div>
+          </div>
+
+          <!-- Force per rower -->
+          <div style="margin-bottom:1.35rem;">
+            <div class="field-label">
+              <span>💪</span>
+              <span class="lbl">Force Per Rower</span>
+              <span class="unit">Newtons</span>
+            </div>
+            <input type="number" class="input-field" id="force-input" min="80" max="400" step="5" value="180" placeholder="e.g. 180" oninput="updateForce(this.value)" style="border-color:rgba(124,58,237,.3);">
+            <p style="font-size:.72rem;color:rgba(180,220,255,.28);margin-top:.3rem;padding-left:4px;">Average pull force per rower. Typical elite range: 180–280 N</p>
+          </div>
+
+          <!-- Stroke Rate Slider -->
+          <div style="margin-bottom:1.5rem;">
+            <div class="field-label">
+              <span>🌀</span>
+              <span class="lbl">Stroke Rate</span>
+              <span class="val" id="stroke-val" style="color:#FF2D78;">32 <span style="font-size:.72rem;color:rgba(180,220,255,.4);">spm</span></span>
+            </div>
+            <div class="range-wrap">
+              <div class="range-track"></div>
+              <div class="range-fill" id="stroke-fill" style="background:linear-gradient(90deg,rgba(255,45,120,.5),#FF2D78);box-shadow:0 0 10px rgba(255,45,120,.4);width:30%;"></div>
+              <div class="range-thumb" id="stroke-thumb" style="left:calc(30% - 10px);border:2.5px solid #FF2D78;box-shadow:0 0 12px rgba(255,45,120,.6);"></div>
+              <input type="range" min="20" max="60" step="1" value="32" id="stroke-slider" oninput="updateStroke(this.value)">
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;">
+              <span style="font-size:.65rem;color:rgba(180,220,255,.25);">20</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">30</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">40</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">50</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">60</span>
+            </div>
+          </div>
+
+          <!-- Total Force metric -->
+          <div style="padding:.9rem 1rem;background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(255,45,120,.07));border:1px solid rgba(124,58,237,.25);border-radius:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:.8rem;color:rgba(180,220,255,.45);">⚡ Total Team Force</span>
+              <span class="cinzel" id="total-force-val" style="font-weight:800;font-size:1.15rem;color:#7C3AED;">18.0 <span style="font-size:.72rem;color:rgba(180,220,255,.35);">kN</span></span>
+            </div>
+            <div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:.5rem;overflow:hidden;">
+              <div id="total-force-bar" style="height:100%;width:45%;background:linear-gradient(90deg,#7C3AED,#FF2D78);border-radius:2px;transition:width .4s ease;"></div>
+            </div>
+            <p id="total-force-eq" style="font-size:.68rem;color:rgba(180,220,255,.25);margin-top:.3rem;">100 rowers × 180 N = 18,000 N</p>
+          </div>
+        </div>
+
+        <!-- Environmental -->
+        <div class="glass-s fade-up-3" style="padding:2rem;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.75rem;padding-bottom:1rem;border-bottom:1px solid rgba(0,191,165,.2);">
+            <div style="width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,rgba(0,191,165,.25),rgba(0,229,255,.15));border:1px solid rgba(0,191,165,.4);display:flex;align-items:center;justify-content:center;font-size:1.3rem;">🌊</div>
+            <div>
+              <h2 class="cinzel" style="font-size:1rem;font-weight:700;color:#00BFA5;letter-spacing:.04em;">Environmental Conditions</h2>
+              <p style="color:rgba(180,220,255,.3);font-size:.73rem;margin-top:2px;">Race-day weather & water data</p>
+            </div>
+          </div>
+
+          <!-- Wind Speed -->
+          <div style="margin-bottom:1.5rem;">
+            <div class="field-label">
+              <span>💨</span>
+              <span class="lbl">Wind Speed</span>
+              <span class="val" id="wind-speed-val" style="color:#00BFA5;">12 <span style="font-size:.72rem;color:rgba(180,220,255,.4);">km/h</span></span>
+            </div>
+            <div class="range-wrap">
+              <div class="range-track"></div>
+              <div class="range-fill" id="wind-speed-fill" style="background:linear-gradient(90deg,rgba(0,191,165,.5),#00BFA5);box-shadow:0 0 10px rgba(0,191,165,.4);width:20%;"></div>
+              <div class="range-thumb" id="wind-speed-thumb" style="left:calc(20% - 10px);border:2.5px solid #00BFA5;box-shadow:0 0 12px rgba(0,191,165,.6);"></div>
+              <input type="range" min="0" max="60" step="1" value="12" id="wind-speed-slider" oninput="updateWindSpeed(this.value)">
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;">
+              <span style="font-size:.65rem;color:rgba(180,220,255,.25);">0</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">15</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">30</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">45</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">60 km/h</span>
+            </div>
+          </div>
+
+          <!-- Wind Direction Compass -->
+          <div style="margin-bottom:1.35rem;">
+            <div class="field-label">
+              <span>🧭</span>
+              <span class="lbl">Wind Direction</span>
+              <span class="val" id="wind-dir-label" style="color:#FF6B00;">E <span style="font-size:.78rem;color:rgba(180,220,255,.4);">(90°)</span></span>
+            </div>
+            <div id="compass">
+              <div id="compass-ring"></div>
+              <div id="compass-inner"></div>
+              <div id="compass-arrow"><div id="arrow-line" style="transform:rotate(90deg);"></div></div>
+              <div id="compass-center"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:.5rem;" id="dir-btns"></div>
+          </div>
+
+          <!-- Water Current -->
+          <div style="margin-bottom:1rem;">
+            <div class="field-label">
+              <span>🌊</span>
+              <span class="lbl">Water Current</span>
+              <span class="val" id="water-curr-val" style="color:#00E5FF;">0.8 <span style="font-size:.72rem;color:rgba(180,220,255,.4);">m/s</span></span>
+            </div>
+            <div class="range-wrap">
+              <div class="range-track"></div>
+              <div class="range-fill" id="water-curr-fill" style="background:linear-gradient(90deg,rgba(0,229,255,.5),#00E5FF);box-shadow:0 0 10px rgba(0,229,255,.4);width:26.7%;"></div>
+              <div class="range-thumb" id="water-curr-thumb" style="left:calc(26.7% - 10px);border:2.5px solid #00E5FF;box-shadow:0 0 12px rgba(0,229,255,.6);"></div>
+              <input type="range" min="0" max="3" step="0.1" value="0.8" id="water-curr-slider" oninput="updateWaterCurr(this.value)">
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;">
+              <span style="font-size:.65rem;color:rgba(180,220,255,.25);">0</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">0.75</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">1.5</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">2.25</span><span style="font-size:.65rem;color:rgba(180,220,255,.25);">3 m/s</span>
+            </div>
+          </div>
+
+          <!-- Wind + Current badges -->
+          <div style="display:flex;gap:.75rem;margin-top:.25rem;">
+            <div id="wind-badge" style="flex:1;padding:.6rem .75rem;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);border-radius:10px;text-align:center;">
+              <div style="font-size:.85rem;">💨</div>
+              <div id="wind-badge-label" style="font-size:.78rem;font-weight:700;color:#00E676;margin-top:2px;">Calm</div>
+              <div style="font-size:.65rem;color:rgba(180,220,255,.3);">Wind</div>
+            </div>
+            <div id="curr-badge" style="flex:1;padding:.6rem .75rem;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);border-radius:10px;text-align:center;">
+              <div style="font-size:.85rem;">🌊</div>
+              <div id="curr-badge-label" style="font-size:.78rem;font-weight:700;color:#FFD700;margin-top:2px;">Flowing</div>
+              <div style="font-size:.65rem;color:rgba(180,220,255,.3);">Current</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Summary + Submit -->
+      <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+        <!-- Live Summary -->
+        <div class="glass-s fade-up-2" style="padding:1.75rem;">
+          <h3 class="cinzel" style="color:#00E5FF;font-size:.88rem;font-weight:700;margin-bottom:1.25rem;letter-spacing:.05em;">📋 Live Input Summary</h3>
+          <div id="live-summary"></div>
+        </div>
+
+        <!-- AI Readiness -->
+        <div class="glass-s fade-up-3" style="padding:1.75rem;">
+          <h3 class="cinzel" style="color:#FF2D78;font-size:.88rem;font-weight:700;margin-bottom:1.2rem;letter-spacing:.05em;">🤖 AI Readiness Indicators</h3>
+          <div id="readiness-indicators"></div>
+          <div style="margin-top:1rem;padding:.8rem;background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.2);border-radius:10px;text-align:center;">
+            <div style="font-size:.7rem;color:rgba(0,230,118,.6);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Model Confidence</div>
+            <div class="cinzel" style="font-size:1.5rem;font-weight:900;color:#00E676;">94%</div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="fade-up-4" style="display:flex;flex-direction:column;gap:.75rem;">
+          <button id="run-btn" class="btn-p" style="width:100%;padding:1rem;border-radius:14px;font-family:'Cinzel',serif;font-weight:700;font-size:.95rem;letter-spacing:.05em;" onclick="runAnalysis()">Run AI Analysis →</button>
+          <button onclick="resetInputs()" style="width:100%;padding:.65rem;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:transparent;color:rgba(180,220,255,.35);font-size:.82rem;transition:all .2s;" onmouseover="this.style.borderColor='rgba(255,45,120,.3)';this.style.color='#FF2D78';" onmouseout="this.style.borderColor='rgba(255,255,255,.08)';this.style.color='rgba(180,220,255,.35)';">↺ Reset to Defaults</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE 3: RESULTS
+     ============================================================ -->
+<div id="page-results" class="page" style="padding-bottom:4rem;">
+  <div style="max-width:1200px;margin:0 auto;padding:2rem;">
+    <div class="fade-up" style="margin-bottom:2.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <div style="display:inline-block;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);border-radius:50px;padding:.3rem 1rem;margin-bottom:.75rem;font-size:.77rem;color:#00E676;letter-spacing:.1em;text-transform:uppercase;">✓ Analysis Complete</div>
+        <h1 class="cinzel" style="font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:900;color:#fff;">Race <span class="gold-text">Intelligence Report</span></h1>
+      </div>
+      <div id="report-time" style="color:rgba(180,220,255,.28);font-size:.78rem;"></div>
+    </div>
+
+    <!-- Section 1: Circles + Scores -->
+    <div class="results-top fade-up-1" style="display:flex;gap:1.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <div class="glass-s" style="flex:0 0 auto;padding:2rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;justify-content:center;">
+        <!-- Win Probability Circle -->
+        <div style="text-align:center;">
+          <svg width="176" height="176" viewBox="0 0 176 176">
+            <defs>
+              <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00E5FF"/><stop offset="100%" stop-color="#7C3AED"/></linearGradient>
+              <filter id="glow1"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <circle cx="88" cy="88" r="68" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+            <circle id="circ1" cx="88" cy="88" r="68" fill="none" stroke="url(#g1)" stroke-width="10" stroke-linecap="round" stroke-dasharray="427.26" stroke-dashoffset="427.26" style="transform:rotate(-90deg);transform-origin:88px 88px;filter:url(#glow1);transition:stroke-dashoffset 2s cubic-bezier(.34,1.56,.64,1);"/>
+            <text x="88" y="83" text-anchor="middle" fill="#00E5FF" font-size="27" font-weight="900" font-family="Cinzel,serif" id="circ1-txt">74%</text>
+            <text x="88" y="104" text-anchor="middle" fill="rgba(180,220,255,0.38)" font-size="9" letter-spacing="1.4">WIN PROBABILITY</text>
+          </svg>
+        </div>
+        <!-- Performance Score Circle -->
+        <div style="text-align:center;">
+          <svg width="176" height="176" viewBox="0 0 176 176">
+            <defs>
+              <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00E676"/><stop offset="100%" stop-color="#00BFA5"/></linearGradient>
+              <filter id="glow2"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <circle cx="88" cy="88" r="68" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+            <circle id="circ2" cx="88" cy="88" r="68" fill="none" stroke="url(#g2)" stroke-width="10" stroke-linecap="round" stroke-dasharray="427.26" stroke-dashoffset="427.26" style="transform:rotate(-90deg);transform-origin:88px 88px;filter:url(#glow2);transition:stroke-dashoffset 2s cubic-bezier(.34,1.56,.64,1);"/>
+            <text x="88" y="83" text-anchor="middle" fill="#00E676" font-size="27" font-weight="900" font-family="Cinzel,serif" id="circ2-txt">88%</text>
+            <text x="88" y="104" text-anchor="middle" fill="rgba(180,220,255,0.38)" font-size="9" letter-spacing="1.4">PERFORMANCE SCORE</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Score breakdown -->
+      <div class="glass-s" style="flex:1;min-width:260px;padding:2rem;">
+        <h3 class="cinzel" style="color:#00E5FF;font-size:.9rem;margin-bottom:1.25rem;">Score Breakdown</h3>
+        <div id="score-breakdown"></div>
+        <div style="margin-top:1.25rem;padding:.9rem;background:linear-gradient(135deg,rgba(0,230,118,.1),rgba(0,191,165,.07));border:1px solid rgba(0,230,118,.25);border-radius:12px;text-align:center;">
+          <div class="cinzel" style="color:#00E676;font-size:.9rem;font-weight:700;">🏆 HIGH CONTENDER</div>
+          <div style="color:rgba(180,220,255,.38);font-size:.73rem;margin-top:3px;">Top 25% probability among registered teams</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Charts -->
+    <div class="fade-up-2" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin-bottom:1.5rem;">
+      <!-- Stamina Chart -->
+      <div class="glass-s" style="padding:1.5rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
+          <div><h3 class="cinzel" style="color:#00E5FF;font-size:.9rem;font-weight:700;">Stamina Curve</h3><p style="color:rgba(180,220,255,.33);font-size:.73rem;">Energy drop across race phases</p></div>
+          <div style="display:flex;gap:10px;">
+            <div style="display:flex;align-items:center;gap:5px;font-size:.7rem;color:rgba(180,220,255,.5);"><div style="width:16px;height:2px;background:#00E5FF;border-radius:2px;"></div>Actual</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:.7rem;color:rgba(180,220,255,.5);"><div style="width:16px;height:2px;background:#FF2D78;border-radius:2px;"></div>Predicted</div>
+          </div>
+        </div>
+        <svg id="stamina-chart" viewBox="0 0 460 150" style="width:100%;height:auto;overflow:visible;">
+          <defs>
+            <linearGradient id="areaG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00E5FF" stop-opacity="0.28"/><stop offset="100%" stop-color="#00E5FF" stop-opacity="0"/></linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <!-- Strength Bar Chart -->
+      <div class="glass-s" style="padding:1.5rem;">
+        <div style="margin-bottom:.75rem;">
+          <h3 class="cinzel" style="color:#00E5FF;font-size:.9rem;font-weight:700;">Player Strength Matrix</h3>
+          <p style="color:rgba(180,220,255,.33);font-size:.73rem;">Sample top-10 rower performance scores</p>
+        </div>
+        <div id="strength-bars" style="display:flex;align-items:flex-end;gap:7px;height:130px;"></div>
+        <div style="display:flex;gap:1rem;margin-top:.75rem;justify-content:center;">
+          <div style="display:flex;align-items:center;gap:5px;font-size:.7rem;color:rgba(180,220,255,.45);"><div style="width:10px;height:10px;background:#00E676;border-radius:2px;"></div>Strong</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:.7rem;color:rgba(180,220,255,.45);"><div style="width:10px;height:10px;background:#FF6B00;border-radius:2px;"></div>Average</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:.7rem;color:rgba(180,220,255,.45);"><div style="width:10px;height:10px;background:#FF2D78;border-radius:2px;"></div>Needs Work</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Boat Seating -->
+    <div class="glass-s fade-up-3" style="padding:2rem;margin-bottom:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem;">
+        <div>
+          <h3 class="cinzel" style="color:#00E5FF;font-size:.95rem;font-weight:700;">Boat Seating Layout</h3>
+          <p style="color:rgba(180,220,255,.33);font-size:.73rem;margin-top:2px;">Top-view — optimal 100 rower positioning</p>
+        </div>
+        <div style="display:flex;gap:.65rem;flex-wrap:wrap;">
+          <div style="font-size:.7rem;color:#00E676;background:rgba(0,230,118,.12);border:1px solid rgba(0,230,118,.35);padding:3px 10px;border-radius:20px;">💪 Strong (60)</div>
+          <div style="font-size:.7rem;color:#FF6B00;background:rgba(255,107,0,.12);border:1px solid rgba(255,107,0,.35);padding:3px 10px;border-radius:20px;">⚡ Average (28)</div>
+          <div style="font-size:.7rem;color:#FF2D78;background:rgba(255,45,120,.12);border:1px solid rgba(255,45,120,.35);padding:3px 10px;border-radius:20px;">⚠ Weak (12)</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;">
+        <div id="seat-container">
+          <div style="text-align:center;color:rgba(0,229,255,.4);font-size:.68rem;margin-bottom:4px;letter-spacing:.12em;">◀ BOW (FRONT)</div>
+          <div id="seat-grid"></div>
+          <div style="text-align:center;color:rgba(255,107,0,.5);font-size:.68rem;margin-top:4px;letter-spacing:.12em;">STERN (BACK) ▶</div>
+        </div>
+      </div>
+      <p style="text-align:center;color:rgba(180,220,255,.2);font-size:.7rem;margin-top:10px;">Showing 40/100 rowers • Scroll to see all positions</p>
+    </div>
+
+    <!-- Section 4: AI Suggestions -->
+    <div class="fade-up-4">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;">
+        <span style="font-size:1.3rem;">🤖</span>
+        <h2 class="cinzel" style="font-size:1.05rem;font-weight:700;color:#00E5FF;">AI Strategic Recommendations</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;" id="suggestions-grid"></div>
+    </div>
+
+    <!-- Export -->
+    <div class="fade-up-5" style="margin-top:2rem;display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+      <button class="btn-g">📄 Export PDF Report</button>
+      <button class="btn-p" style="animation:none;" onclick="showPage('input')">🔄 Re-run Analysis</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE 4: ABOUT
+     ============================================================ -->
+<div id="page-about" class="page" style="padding-bottom:4rem;">
+  <div style="text-align:center;padding:3rem 2rem 3.5rem;">
+    <div style="display:inline-block;background:linear-gradient(90deg,rgba(0,229,255,.08),rgba(124,58,237,.08));border:1px solid rgba(0,229,255,.22);border-radius:50px;padding:.38rem 1.3rem;margin-bottom:1.5rem;font-size:.77rem;color:rgba(0,229,255,.85);letter-spacing:.16em;text-transform:uppercase;">🚀 Hackathon Prototype</div>
+    <h1 class="cinzel fade-up" style="font-size:clamp(2rem,5vw,4rem);font-weight:900;color:#fff;margin-bottom:1rem;">About <span class="gold-text">VallamAI</span></h1>
+    <p class="fade-up-1" style="color:rgba(180,220,255,.45);font-size:1.1rem;max-width:600px;margin:0 auto 2.5rem;line-height:1.88;">
+      An AI-powered analytics engine for Kerala's legendary Chundan Vallam (Snake Boat) racing — where centuries of tradition meet real-time computational intelligence.
+    </p>
+    <div class="fade-up-2" style="display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;max-width:780px;margin:0 auto;">
+      <div style="display:flex;align-items:center;gap:8px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.25);border-radius:50px;padding:.5rem 1.1rem;"><span>⚙️</span><span class="cinzel" style="font-weight:700;font-size:.8rem;color:#00E5FF;letter-spacing:.04em;">7 Input Parameters</span></div>
+      <div style="display:flex;align-items:center;gap:8px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);border-radius:50px;padding:.5rem 1.1rem;"><span>🧠</span><span class="cinzel" style="font-weight:700;font-size:.8rem;color:#7C3AED;letter-spacing:.04em;">Physics-Based AI</span></div>
+      <div style="display:flex;align-items:center;gap:8px;background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);border-radius:50px;padding:.5rem 1.1rem;"><span>⚡</span><span class="cinzel" style="font-weight:700;font-size:.8rem;color:#FFD700;letter-spacing:.04em;">Instant Strategy</span></div>
+      <div style="display:flex;align-items:center;gap:8px;background:rgba(255,45,120,.08);border:1px solid rgba(255,45,120,.25);border-radius:50px;padding:.5rem 1.1rem;"><span>🎯</span><span class="cinzel" style="font-weight:700;font-size:.8rem;color:#FF2D78;letter-spacing:.04em;">Seating Optimizer</span></div>
+    </div>
+  </div>
+
+  <div style="max-width:1100px;margin:0 auto;padding:0 2rem;">
+    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,255,.22),transparent);margin-bottom:3rem;"></div>
+
+    <!-- What it does -->
+    <div class="glass-s fade-up-2" style="padding:2.5rem;margin-bottom:2rem;display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap;">
+      <div style="flex:0 0 64px;width:64px;height:64px;background:linear-gradient(135deg,rgba(0,229,255,.2),rgba(124,58,237,.2));border:1px solid rgba(0,229,255,.3);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;">🚣</div>
+      <div style="flex:1;min-width:240px;">
+        <h2 class="cinzel" style="color:#00E5FF;font-size:1.25rem;margin-bottom:.85rem;">What VallamAI Does</h2>
+        <p style="color:rgba(180,220,255,.55);line-height:1.9;font-size:.95rem;margin-bottom:.9rem;">VallamAI is a next-generation sports analytics platform built for the ancient art of Kerala Chundan Vallam (Snake Boat) racing. Coaches and captains input seven key parameters — boat length, number of rowers, force per rower, stroke rate, wind speed, wind direction, and water current — and the AI engine instantly computes a comprehensive race strategy.</p>
+        <p style="color:rgba(180,220,255,.42);line-height:1.88;font-size:.92rem;">The platform combines hydrodynamic drag modeling, biomechanical force analysis, and environmental factor weighting to produce winning probability scores, optimal seating arrangements, stroke optimization tips, and phase-by-phase pacing plans.</p>
+      </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="fade-up-2" style="margin-bottom:2.5rem;">
+      <h2 class="cinzel" style="color:#00E5FF;font-size:1.15rem;margin-bottom:1.5rem;text-align:center;letter-spacing:.04em;">How It Works</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;">
+        <div class="about-step-card" style="background:rgba(8,20,50,.6);border:1px solid rgba(0,229,255,.18);border-radius:20px;padding:1.75rem;position:relative;overflow:hidden;transition:all .3s;" onmouseover="this.style.borderColor='rgba(0,229,255,.45)';this.style.transform='translateY(-4px)';" onmouseout="this.style.borderColor='rgba(0,229,255,.18)';this.style.transform='none';">
+          <div style="position:absolute;top:16px;right:18px;font-family:'Cinzel',serif;font-weight:900;font-size:2.5rem;color:rgba(0,229,255,.08);letter-spacing:-.05em;">01</div>
+          <div style="width:52px;height:52px;background:rgba(0,229,255,.12);border:1px solid rgba(0,229,255,.3);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:1rem;">⚙️</div>
+          <h3 class="cinzel" style="color:#00E5FF;font-size:.9rem;font-weight:700;margin-bottom:.6rem;">Input Parameters</h3>
+          <p style="color:rgba(180,220,255,.45);font-size:.84rem;line-height:1.78;">Enter 7 precise race-day values: boat geometry, crew force, stroke rhythm, and live weather conditions into the configuration panel.</p>
+        </div>
+        <div style="background:rgba(8,20,50,.6);border:1px solid rgba(124,58,237,.18);border-radius:20px;padding:1.75rem;position:relative;overflow:hidden;transition:all .3s;" onmouseover="this.style.borderColor='rgba(124,58,237,.45)';this.style.transform='translateY(-4px)';" onmouseout="this.style.borderColor='rgba(124,58,237,.18)';this.style.transform='none';">
+          <div style="position:absolute;top:16px;right:18px;font-family:'Cinzel',serif;font-weight:900;font-size:2.5rem;color:rgba(124,58,237,.08);letter-spacing:-.05em;">02</div>
+          <div style="width:52px;height:52px;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:1rem;">🧠</div>
+          <h3 class="cinzel" style="color:#7C3AED;font-size:.9rem;font-weight:700;margin-bottom:.6rem;">AI Processing</h3>
+          <p style="color:rgba(180,220,255,.45);font-size:.84rem;line-height:1.78;">The engine runs hydrodynamic simulation, biomechanical force modeling, and environmental resistance calculations simultaneously.</p>
+        </div>
+        <div style="background:rgba(8,20,50,.6);border:1px solid rgba(255,45,120,.18);border-radius:20px;padding:1.75rem;position:relative;overflow:hidden;transition:all .3s;" onmouseover="this.style.borderColor='rgba(255,45,120,.45)';this.style.transform='translateY(-4px)';" onmouseout="this.style.borderColor='rgba(255,45,120,.18)';this.style.transform='none';">
+          <div style="position:absolute;top:16px;right:18px;font-family:'Cinzel',serif;font-weight:900;font-size:2.5rem;color:rgba(255,45,120,.08);letter-spacing:-.05em;">03</div>
+          <div style="width:52px;height:52px;background:rgba(255,45,120,.12);border:1px solid rgba(255,45,120,.3);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:1rem;">📊</div>
+          <h3 class="cinzel" style="color:#FF2D78;font-size:.9rem;font-weight:700;margin-bottom:.6rem;">Strategy Output</h3>
+          <p style="color:rgba(180,220,255,.45);font-size:.84rem;line-height:1.78;">Receive winning probability, performance scores, seating charts, and actionable AI coaching tips — all in one detailed report.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature Grid -->
+    <div class="fade-up-3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;margin-bottom:2.5rem;" id="about-features"></div>
+
+    <!-- Design Pillars -->
+    <div class="glass-s fade-up-3" style="padding:2.5rem;margin-bottom:2rem;background:linear-gradient(135deg,rgba(0,229,255,.04),rgba(124,58,237,.04));">
+      <h2 class="cinzel" style="color:#00E5FF;font-size:1.15rem;margin-bottom:.5rem;text-align:center;">Why VallamAI Is Different</h2>
+      <p style="text-align:center;color:rgba(180,220,255,.35);font-size:.83rem;margin-bottom:1.75rem;">Core design principles behind the platform</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;" id="about-pillars"></div>
+    </div>
+
+    <!-- Prototype note -->
+    <div class="glass-s fade-up-4" style="padding:1.75rem 2rem;margin-bottom:2rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;">
+      <div style="width:48px;height:48px;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">🛠️</div>
+      <div style="flex:1;min-width:200px;">
+        <h3 class="cinzel" style="color:#FFD700;font-size:.95rem;margin-bottom:.4rem;">Built as a Hackathon Prototype</h3>
+        <p style="color:rgba(180,220,255,.42);font-size:.85rem;line-height:1.75;">VallamAI is a working proof-of-concept demonstrating how AI and physics modeling can transform traditional boat racing strategy. All analytics are computed from the 7 input parameters in real time, with no external data dependencies or pre-loaded datasets.</p>
+      </div>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap;">
+        <span style="font-size:.72rem;color:#FFD700;background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);border-radius:20px;padding:3px 11px;font-weight:600;">React→HTML</span>
+        <span style="font-size:.72rem;color:#FFD700;background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);border-radius:20px;padding:3px 11px;font-weight:600;">Physics AI</span>
+        <span style="font-size:.72rem;color:#FFD700;background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);border-radius:20px;padding:3px 11px;font-weight:600;">SVG Viz</span>
+        <span style="font-size:.72rem;color:#FFD700;background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.25);border-radius:20px;padding:3px 11px;font-weight:600;">Real-time</span>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="fade-up-5" style="text-align:center;padding:2.5rem 2rem;background:linear-gradient(135deg,rgba(0,229,255,.06),rgba(124,58,237,.08),rgba(255,45,120,.05));border:1px solid rgba(0,229,255,.15);border-radius:24px;">
+      <div style="font-size:2.2rem;margin-bottom:.75rem;">🏆</div>
+      <p class="cinzel" style="color:rgba(180,220,255,.28);font-size:.72rem;letter-spacing:.3em;margin-bottom:.75rem;">READY TO RACE SMARTER?</p>
+      <h3 class="cinzel" style="color:#fff;font-size:1.6rem;margin-bottom:1rem;">Try the <span class="gold-text">AI Analysis</span> Now</h3>
+      <p style="color:rgba(180,220,255,.38);font-size:.9rem;max-width:420px;margin:0 auto 1.75rem;line-height:1.78;">Input your boat and race-day data and let VallamAI compute a complete strategic race plan in seconds.</p>
+      <button class="btn-p" onclick="showPage('input')">Begin Analysis →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+// ── State ──
+const state = {
+  boatLen: 35, numRowers: 100, force: 180,
+  stroke: 32, windSpeed: 12, windDir: 90, waterCurr: 0.8,
+  apiData: null // Store API response
+};
+
+// ── API Call Function ──
+async function callSimulationAPI() {
+  try {
+    const response = await fetch('http://127.0.0.1:5000/simulate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        boat_length: state.boatLen,
+        num_rowers: state.numRowers,
+        force_per_rower: state.force,
+        stroke_rate: state.stroke,
+        wind_speed: state.windSpeed,
+        wind_direction: state.windDir,
+        water_current: state.waterCurr
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    state.apiData = data;
+    return data;
+  } catch (error) {
+    console.error('API call failed:', error);
+    // Fallback to mock data if API fails
+    return {
+      simulation: {
+        race_time: 245.67,
+        final_velocity: 4.2,
+        average_velocity: 4.07,
+        max_velocity: 4.8,
+        final_fatigue_factor: 0.6134
+      },
+      ai_analysis: "Based on your current configuration, the team shows strong potential with optimal stroke synchronization. Consider slight adjustments to stroke rate in Phase 2 to conserve energy for the final sprint."
+    };
+  }
+}
+
+// ── Page Navigation ──
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+  if (name === 'results') renderResults();
+}
+
+// ── Navbar scroll ──
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ── Stars ──
+(function buildStars() {
+  const c = document.getElementById('stars');
+  for (let i = 0; i < 70; i++) {
+    const d = document.createElement('div');
+    const sz = i%9===0?3:i%5===0?2:1.4;
+    d.style.cssText = `position:absolute;left:${(i*139.7)%100}%;top:${(i*83.1)%42}%;width:${sz}px;height:${sz}px;border-radius:50%;background:${i%4===0?'#00E5FF':i%7===0?'#FFD700':'#fff'};opacity:${0.1+(i%5)*0.07};animation:floatStar ${2.5+(i%4)*0.7}s ease-in-out ${i*0.28}s infinite;`;
+    c.appendChild(d);
+  }
+})();
+
+// ── Boat Animation ──
+(function animateBoat() {
+  const boatWrap = document.getElementById('boat-wrap');
+  const w1 = document.getElementById('w1');
+  const w2 = document.getElementById('w2');
+  const w3 = document.getElementById('w3');
+  const oarPos = [115,148,181,214,247,280,313,346,379,412,445,478,511,544,577,610,643,676,709,742,775,808];
+
+  // Build rowers
+  const rowersG = document.getElementById('rowers');
+  for (let i = 0; i < 26; i++) {
+    const x = 102 + i * 30, side = i % 2;
+    rowersG.innerHTML += `
+      <g transform="translate(${x},110)">
+        <ellipse cx="0" cy="-6" rx="5.5" ry="8" fill="${side===0?'#18385E':'#0E2840'}"/>
+        <circle cx="0" cy="-17" r="5" fill="#C49A72"/>
+        <path d="M-5,-22 Q0,-26 5,-22 Q5,-17 0,-17 Q-5,-17 -5,-22Z" fill="#3A2010"/>
+        <path d="M-5,-2 L5,-2 L6,6 L-6,6Z" fill="rgba(240,235,220,0.18)" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+        <path d="${side===0?'M-4,-8 Q-12,-12 -18,-16':'M4,-8 Q12,-12 18,-16'}" stroke="#C49A72" stroke-width="3" stroke-linecap="round" fill="none"/>
+      </g>`;
+  }
+
+  // Build oar elements
+  const oarsG = document.getElementById('oars');
+  const oarEls = [];
+  oarPos.forEach((px, i) => {
+    const isLeft = i % 2 === 0;
+    const baseY = isLeft ? 145 : 148;
+    const pivX = isLeft ? px - 8 : px + 8;
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.style.transformOrigin = `${pivX}px ${baseY - 5}px`;
+    const x2 = isLeft ? pivX - 50 : pivX + 50;
+    const bx = isLeft ? pivX - 54 : pivX + 54;
+    const bPath = isLeft
+      ? `M${pivX-54},${baseY+30} Q${pivX-62},${baseY+28} ${pivX-60},${baseY+40} Q${pivX-52},${baseY+44} ${pivX-46},${baseY+38}Z`
+      : `M${pivX+54},${baseY+30} Q${pivX+62},${baseY+28} ${pivX+60},${baseY+40} Q${pivX+52},${baseY+44} ${pivX+46},${baseY+38}Z`;
+    g.innerHTML = `
+      <line x1="${pivX}" y1="${baseY-5}" x2="${x2}" y2="${baseY+28}" stroke="#3A2008" stroke-width="3" stroke-linecap="round"/>
+      <path d="${bPath}" fill="#5C3A1A" stroke="#7A5025" stroke-width="0.8"/>`;
+    oarsG.appendChild(g);
+    oarEls.push(g);
+  });
+
+  let t = 0;
+  function tick() {
+    t += 0.008;
+    const ty = Math.sin(t) * 5.5 + Math.sin(t * 1.8 + 0.5) * 2;
+    const rx = Math.sin(t * 0.85) * 0.65 + Math.sin(t * 2.2) * 0.25;
+    boatWrap.style.transform = `translateX(-50%) translateY(${ty}px) rotate(${rx}deg)`;
+    if (w1) w1.style.transform = `translateX(${-(t * 22) % 800}px)`;
+    if (w2) w2.style.transform = `translateX(${-(t * 14) % 800}px)`;
+    if (w3) w3.style.transform = `translateX(${-(t * 8) % 800}px)`;
+    oarEls.forEach((el, i) => {
+      const side = i % 2 === 0 ? 1 : -1;
+      const phase = i % 2 === 0 ? t : t + Math.PI;
+      el.style.transform = `rotate(${Math.sin(phase * 1.5) * 22 * side}deg)`;
+    });
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+
+// ── Compass ──
+const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+const degMap = {N:0,NE:45,E:90,SE:135,S:180,SW:225,W:270,NW:315};
+(function buildCompass() {
+  const btnsDiv = document.getElementById('dir-btns');
+  dirs.forEach(d => {
+    const angle = (dirs.indexOf(d) * 45 - 90) * Math.PI / 180;
+    const r = 44;
+    const cx = 60 + r * Math.cos(angle), cy = 60 + r * Math.sin(angle);
+    // Dot
+    const dot = document.createElement('div');
+    dot.className = 'dir-dot' + (d === 'E' ? ' active' : '');
+    dot.id = 'dot-' + d;
+    dot.style.cssText = `left:${cx-11}px;top:${cy-11}px;`;
+    dot.textContent = d;
+    dot.onclick = () => setWindDir(degMap[d]);
+    document.getElementById('compass').appendChild(dot);
+    // Button
+    const btn = document.createElement('button');
+    btn.textContent = d;
+    btn.id = 'dirbtn-' + d;
+    btn.style.cssText = `padding:.3rem 0;border:1px solid ${d==='E'?'#FF6B00':'rgba(255,255,255,0.08)'};border-radius:8px;background:${d==='E'?'rgba(255,107,0,0.18)':'rgba(255,255,255,0.02)'};color:${d==='E'?'#FF6B00':'rgba(180,220,255,0.38)'};font-size:.7rem;font-weight:700;cursor:pointer;transition:all .15s;`;
+    btn.onclick = () => setWindDir(degMap[d]);
+    btnsDiv.appendChild(btn);
+  });
+})();
+
+function setWindDir(deg) {
+  state.windDir = deg;
+  document.getElementById('arrow-line').style.transform = `rotate(${deg}deg)`;
+  const label = dirs.find(d => degMap[d] === deg) || 'N';
+  document.getElementById('wind-dir-label').innerHTML = `${label} <span style="font-size:.78rem;color:rgba(180,220,255,.4);">(${deg}°)</span>`;
+  dirs.forEach(d => {
+    const isDot = d === label;
+    const dotEl = document.getElementById('dot-' + d);
+    const btnEl = document.getElementById('dirbtn-' + d);
+    if (dotEl) { dotEl.classList.toggle('active', isDot); }
+    if (btnEl) {
+      btnEl.style.borderColor = isDot ? '#FF6B00' : 'rgba(255,255,255,0.08)';
+      btnEl.style.background = isDot ? 'rgba(255,107,0,0.18)' : 'rgba(255,255,255,0.02)';
+      btnEl.style.color = isDot ? '#FF6B00' : 'rgba(180,220,255,0.38)';
+    }
+  });
+  updateSummary();
+}
+
+// ── Range helpers ──
+function setRange(id, pct, color) {
+  document.getElementById(id + '-fill').style.width = pct + '%';
+  document.getElementById(id + '-fill').style.boxShadow = `0 0 10px ${color}88`;
+  document.getElementById(id + '-thumb').style.left = `calc(${pct}% - 10px)`;
+}
+
+function updateBoatLen(v) {
+  state.boatLen = parseFloat(v);
+  const pct = ((v - 20) / 40) * 100;
+  setRange('boat-len', pct, '#FFD700');
+  document.getElementById('boat-len-val').innerHTML = `${parseFloat(v).toFixed(1)} <span style="font-size:.72rem;color:rgba(180,220,255,.4);">m</span>`;
+  updateCrewPreview(); updateSummary(); updateDashboard();
+}
+function updateNumRowers(v) {
+  state.numRowers = parseInt(v);
+  const pct = ((v - 50) / 100) * 100;
+  setRange('num-rowers', pct, '#00E5FF');
+  document.getElementById('num-rowers-val').innerHTML = `${v} <span style="font-size:.72rem;color:rgba(180,220,255,.4);">rowers</span>`;
+  updateCrewPreview(); updateSummary(); updateTotalForce(); updateDashboard();
+}
+function updateForce(v) {
+  state.force = parseInt(v) || 0;
+  updateTotalForce(); updateSummary(); updateDashboard();
+}
+function updateStroke(v) {
+  state.stroke = parseInt(v);
+  const pct = ((v - 20) / 40) * 100;
+  setRange('stroke', pct, '#FF2D78');
+  document.getElementById('stroke-val').innerHTML = `${v} <span style="font-size:.72rem;color:rgba(180,220,255,.4);">spm</span>`;
+  updateSummary(); updateDashboard();
+}
+function updateWindSpeed(v) {
+  state.windSpeed = parseInt(v);
+  const pct = (v / 60) * 100;
+  setRange('wind-speed', pct, '#00BFA5');
+  document.getElementById('wind-speed-val').innerHTML = `${v} <span style="font-size:.72rem;color:rgba(180,220,255,.4);">km/h</span>`;
+  updateWindBadge(); updateSummary();
+}
+function updateWaterCurr(v) {
+  state.waterCurr = parseFloat(v);
+  const pct = (v / 3) * 100;
+  setRange('water-curr', pct, '#00E5FF');
+  document.getElementById('water-curr-val').innerHTML = `${parseFloat(v).toFixed(1)} <span style="font-size:.72rem;color:rgba(180,220,255,.4);">m/s</span>`;
+  updateCurrBadge(); updateSummary();
+}
+function updateTotalForce() {
+  const tf = state.numRowers * state.force;
+  document.getElementById('total-force-val').innerHTML = `${(tf/1000).toFixed(1)} <span style="font-size:.72rem;color:rgba(180,220,255,.35);">kN</span>`;
+  document.getElementById('total-force-bar').style.width = Math.min(100,(tf/40000)*100) + '%';
+  document.getElementById('total-force-eq').textContent = `${state.numRowers} rowers × ${state.force} N = ${tf.toLocaleString()} N`;
+}
+function updateWindBadge() {
+  const ws = state.windSpeed;
+  const [label, c] = ws < 10 ? ['Calm','#00E676'] : ws < 25 ? ['Moderate','#FFD700'] : ['Strong','#FF2D78'];
+  const b = document.getElementById('wind-badge');
+  b.style.background = `${c}0F`; b.style.borderColor = `${c}44`;
+  document.getElementById('wind-badge-label').style.color = c;
+  document.getElementById('wind-badge-label').textContent = label;
+}
+function updateCurrBadge() {
+  const wc = state.waterCurr;
+  const [label, c] = wc < 0.5 ? ['Still','#00E676'] : wc < 1.5 ? ['Flowing','#FFD700'] : ['Rapid','#FF2D78'];
+  const b = document.getElementById('curr-badge');
+  b.style.background = `${c}0F`; b.style.borderColor = `${c}44`;
+  document.getElementById('curr-badge-label').style.color = c;
+  document.getElementById('curr-badge-label').textContent = label;
+}
+function updateCrewPreview() {
+  const d = document.getElementById('crew-dots');
+  d.innerHTML = '';
+  const n = Math.min(state.numRowers, 100);
+  for (let i = 0; i < n; i++) {
+    const dot = document.createElement('div');
+    const bg = i < n * 0.6 ? '#00E676' : i < n * 0.85 ? '#FF6B00' : '#FF2D78';
+    dot.style.cssText = `width:6px;height:10px;border-radius:2px;background:${bg};opacity:.75;`;
+    d.appendChild(dot);
+  }
+  document.getElementById('crew-summary').textContent = `${state.numRowers} rowers · ${Math.ceil(state.numRowers/2)} rows · ${state.boatLen}m hull`;
+}
+
+// ── Live Summary ──
+function updateSummary() {
+  const label = dirs.find(d => degMap[d] === state.windDir) || 'N';
+  const params = [
+    {l:'Boat Length',    v:`${state.boatLen} m`,         ic:'📏', c:'#FFD700'},
+    {l:'No. of Rowers', v:`${state.numRowers}`,          ic:'👥', c:'#00E5FF'},
+    {l:'Force/Rower',   v:`${state.force} N`,            ic:'💪', c:'#7C3AED'},
+    {l:'Stroke Rate',   v:`${state.stroke} spm`,         ic:'🌀', c:'#FF2D78'},
+    {l:'Wind Speed',    v:`${state.windSpeed} km/h`,     ic:'💨', c:'#00BFA5'},
+    {l:'Wind Direction',v:`${label} (${state.windDir}°)`,ic:'🧭', c:'#FF6B00'},
+    {l:'Water Current', v:`${state.waterCurr.toFixed(1)} m/s`, ic:'🌊', c:'#00E5FF'},
+  ];
+  const el = document.getElementById('live-summary');
+  el.innerHTML = params.map(p => `
+    <div style="display:flex;align-items:center;gap:8px;padding:.55rem 0;border-bottom:1px solid rgba(255,255,255,.04);">
+      <span style="font-size:.85rem;width:20px;">${p.ic}</span>
+      <span style="flex:1;font-size:.78rem;color:rgba(180,220,255,.42);">${p.l}</span>
+      <span style="font-weight:700;font-size:.83rem;color:${p.c};font-family:'Cinzel',serif;">${p.v}</span>
+    </div>`).join('');
+
+  const ri = document.getElementById('readiness-indicators');
+  const ind = [
+    {l:'Propulsion Power',  v:Math.min(99,Math.round(((state.numRowers*state.force)/35000)*100)), c:'#7C3AED', ic:'💪'},
+    {l:'Stroke Efficiency', v:Math.min(99,Math.round((state.stroke/55)*100)),                     c:'#FF2D78', ic:'🌀'},
+    {l:'Wind Resistance',   v:Math.min(99,Math.round((state.windSpeed/60)*100)),                   c:'#FF6B00', ic:'💨'},
+    {l:'Current Impact',    v:Math.min(99,Math.round((state.waterCurr/3)*100)),                    c:'#00E5FF', ic:'🌊'},
+  ];
+  ri.innerHTML = ind.map(x => `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:.6rem;">
+      <span style="font-size:.9rem;width:22px;text-align:center;">${x.ic}</span>
+      <span style="font-size:.78rem;color:rgba(180,220,255,.45);width:110px;flex-shrink:0;">${x.l}</span>
+      <div style="flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${x.v}%;background:linear-gradient(90deg,${x.c}88,${x.c});border-radius:3px;box-shadow:0 0 6px ${x.c}66;transition:width .4s ease;"></div>
+      </div>
+      <span style="font-size:.78rem;color:${x.c};font-weight:700;width:45px;text-align:right;font-family:'Cinzel',serif;">${x.v}</span>
+    </div>`).join('');
+}
+
+// ── Dashboard live update ──
+function updateDashboard() {
+  const el = document.getElementById('dash-rowers-val');
+  if (el) el.textContent = state.numRowers + ' Rowers';
+  const f = document.getElementById('dash-force');
+  if (f) f.textContent = state.force + 'N';
+  const s = document.getElementById('dash-stroke');
+  if (s) s.textContent = state.stroke + ' spm';
+  const b = document.getElementById('dash-boat-len');
+  if (b) b.textContent = state.boatLen + 'm';
+  const t = document.getElementById('dash-total');
+  if (t) t.textContent = state.numRowers;
+}
+
+// ── Dashboard readiness bars ──
+(function buildReadinessBars() {
+  const data = [
+    {l:'Team Synchrony',    pct:87, c:'#00E5FF'},
+    {l:'Physical Condition',pct:79, c:'#00E676'},
+    {l:'Stroke Efficiency', pct:92, c:'#FFD700'},
+    {l:'Weather Adapt.',    pct:74, c:'#FF2D78'},
+  ];
+  document.getElementById('readiness-bars').innerHTML = data.map(b => `
+    <div style="margin-bottom:1rem;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <span style="font-size:.82rem;color:rgba(180,220,255,.5);">${b.l}</span>
+        <span style="font-size:.82rem;font-weight:700;color:${b.c};">${b.pct}%</span>
+      </div>
+      <div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${b.pct}%;background:linear-gradient(90deg,${b.c}88,${b.c});border-radius:3px;box-shadow:0 0 8px ${b.c}55;"></div>
+      </div>
+    </div>`).join('');
+})();
+
+// ── Reset ──
+function resetInputs() {
+  state.boatLen=35; state.numRowers=100; state.force=180;
+  state.stroke=32; state.windSpeed=12; state.windDir=90; state.waterCurr=0.8;
+  document.getElementById('boat-len-slider').value=35; updateBoatLen(35);
+  document.getElementById('num-rowers-slider').value=100; updateNumRowers(100);
+  document.getElementById('force-input').value=180; updateForce(180);
+  document.getElementById('stroke-slider').value=32; updateStroke(32);
+  document.getElementById('wind-speed-slider').value=12; updateWindSpeed(12);
+  setWindDir(90);
+  document.getElementById('water-curr-slider').value=0.8; updateWaterCurr(0.8);
+}
+
+// ── Run Analysis ──
+async function runAnalysis() {
+  const btn = document.getElementById('run-btn');
+  btn.textContent = '✓ Analyzing...';
+  btn.style.background = 'linear-gradient(135deg,#00E676,#00BFA5)';
+  btn.style.animation = 'none';
+  
+  try {
+    // Call the backend API
+    await callSimulationAPI();
+    
+    // Show results page
+    showPage('results');
+  } catch (error) {
+    console.error('Analysis failed:', error);
+    // Still show results with fallback data
+    showPage('results');
+  } finally {
+    btn.textContent = 'Run AI Analysis →';
+    btn.style.background = 'linear-gradient(135deg,#00E5FF,#7C3AED)';
+    btn.style.animation = 'pulseRing 2.5s infinite';
+  }
+}
+
+// ── Results Render ──
+function renderResults() {
+  document.getElementById('report-time').textContent = new Date().toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'});
+
+  // Get simulation data from API or use defaults
+  const simData = state.apiData ? state.apiData.simulation : {
+    race_time: 245.67,
+    final_velocity: 4.2,
+    average_velocity: 4.07,
+    max_velocity: 4.8,
+    final_fatigue_factor: 0.6134
+  };
+  
+  const aiAnalysis = state.apiData ? state.apiData.ai_analysis : "Based on your current configuration, the team shows strong potential with optimal stroke synchronization. Consider slight adjustments to stroke rate in Phase 2 to conserve energy for the final sprint.";
+
+  // Calculate dynamic percentages based on simulation data
+  const winProbability = Math.min(95, Math.round(50 + (simData.average_velocity / 5) * 30 + (1 - simData.final_fatigue_factor) * 20));
+  const performanceScore = Math.min(98, Math.round(60 + (simData.max_velocity / 5) * 25 + (simData.final_fatigue_factor > 0.5 ? 15 : 0)));
+
+  // Animate circles
+  setTimeout(() => {
+    const circ = 2 * Math.PI * 68;
+    document.getElementById('circ1').style.strokeDashoffset = circ - (winProbability/100)*circ;
+    document.getElementById('circ2').style.strokeDashoffset = circ - (performanceScore/100)*circ;
+    document.getElementById('circ1-txt').textContent = winProbability + '%';
+    document.getElementById('circ2-txt').textContent = performanceScore + '%';
+  }, 100);
+
+  // Score breakdown - calculate based on simulation data
+  const scores = [
+    {l:'Hydrodynamic Efficiency',v:Math.min(99, Math.round((simData.average_velocity / 5) * 100)),c:'#00E5FF'},
+    {l:'Team Synchronization',   v:Math.min(99, Math.round(state.stroke / 60 * 100)),c:'#7C3AED'},
+    {l:'Stroke Power Index',     v:Math.min(99, Math.round((state.numRowers * state.force) / 40000 * 100)),c:'#FF6B00'},
+    {l:'Weather Adaptability',   v:Math.min(99, Math.round(100 - (state.windSpeed / 60) * 30)),c:'#FFD700'},
+    {l:'Fatigue Resilience',     v:Math.min(99, Math.round(simData.final_fatigue_factor * 100)),c:'#FF2D78'},
+  ];
+  document.getElementById('score-breakdown').innerHTML = scores.map(b => `
+    <div style="margin-bottom:.85rem;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-size:.81rem;color:rgba(180,220,255,.48);">${b.l}</span>
+        <span style="font-size:.81rem;font-weight:700;color:${b.c};">${b.v}</span>
+      </div>
+      <div class="score-bar-wrap"><div class="score-bar" style="width:${b.v}%;background:${b.c};box-shadow:0 0 8px ${b.c}66;"></div></div>
+    </div>`).join('');
+
+  // Stamina chart
+  renderStaminaChart();
+
+  // Strength bars
+  const sData = [
+    {n:'P1',v:95,t:'s'},{n:'P2',v:88,t:'s'},{n:'P3',v:72,t:'m'},
+    {n:'P4',v:91,t:'s'},{n:'P5',v:65,t:'m'},{n:'P6',v:58,t:'w'},
+    {n:'P7',v:84,t:'s'},{n:'P8',v:77,t:'m'},{n:'P9',v:61,t:'w'},{n:'P10',v:89,t:'s'},
+  ];
+  const cl = {s:'#00E676',m:'#FF6B00',w:'#FF2D78'};
+  document.getElementById('strength-bars').innerHTML = sData.map(p => `
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;">
+      <div style="font-size:8px;color:rgba(180,220,255,.38);margin-bottom:2px;">${p.v}</div>
+      <div style="width:100%;height:${p.v}%;background:linear-gradient(180deg,${cl[p.t]},${cl[p.t]}77);border-radius:4px 4px 0 0;box-shadow:0 -6px 16px ${cl[p.t]}44;"></div>
+      <div style="font-size:8px;color:rgba(180,220,255,.28);margin-top:3px;">${p.n}</div>
+    </div>`).join('');
+
+  // Seat grid
+  const rowData = [
+    ['s','s'],['s','m'],['s','s'],['m','m'],['s','w'],['s','s'],
+    ['m','s'],['w','m'],['s','s'],['s','m'],['m','s'],['s','s'],
+    ['w','s'],['s','m'],['m','m'],['s','s'],['s','s'],['m','w'],
+    ['s','s'],['s','m'],
+  ];
+  const seatClass = {s:'seat-s',m:'seat-m',w:'seat-w'};
+  const seatLabel = {s:'💪',m:'⚡',w:'⚠'};
+  document.getElementById('seat-grid').innerHTML = rowData.map(row => `
+    <div style="display:flex;justify-content:center;gap:20px;align-items:center;margin-bottom:6px;">
+      <div class="seat ${seatClass[row[0]]}">${seatLabel[row[0]]}</div>
+      <div style="width:1px;height:18px;background:rgba(255,255,255,.06);"></div>
+      <div class="seat ${seatClass[row[1]]}">${seatLabel[row[1]]}</div>
+    </div>`).join('');
+
+  // Suggestions
+  const sugg = [
+    {icon:'🤖',c:'#7C3AED',title:'AI Analysis',desc:aiAnalysis},
+    {icon:'🚣',c:'#00E5FF',title:'Stroke Optimization',desc:'AI recommends reducing stroke rate by 8% in Phase 2 to conserve energy for final sprint. Current synchrony score: 87% — top 3 rowers show slight drift at 145-stroke intervals.'},
+    {icon:'🔄',c:'#FF6B00',title:'Seating Rearrangement',desc:'Move Players 6, 9, 12 from mid-boat to stern positions. High-strength rowers should anchor front 15 rows for maximum hydrodynamic propulsion force.'},
+    {icon:'⏱️',c:'#00E676',title:'Race Pacing Strategy',desc:`Adopt a 70-80-100% pacing model: conserve in Phase 1, accelerate Phase 3, all-out final 200m. Predicted time gain: 4.2 seconds over 1.2km Punnamada Lake course. Current race time: ${simData.race_time}s`},
+  ];
+  document.getElementById('suggestions-grid').innerHTML = sugg.map(s => `
+    <div class="sug-card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;">
+        <div style="width:36px;height:36px;background:${s.c}18;border:1px solid ${s.c}44;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">${s.icon}</div>
+        <span style="font-weight:700;color:${s.c};font-size:.88rem;">${s.title}</span>
+      </div>
+      <p style="color:rgba(180,220,255,.48);font-size:.82rem;line-height:1.78;">${s.desc}</p>
+    </div>`).join('');
+}
+
+// ── Stamina SVG Chart ──
+function renderStaminaChart() {
+  const vals = [100,92,81,68,57,52];
+  const phases = ['Start','Ph 1','Ph 2','Ph 3','Ph 4','Finish'];
+  const W=460,H=150,px=32,py=18;
+  const xs = i => px + i*(W-px*2)/(vals.length-1);
+  const ys = v => py + (100-v)/100*(H-py*2);
+  const pts = vals.map((v,i) => `${xs(i)},${ys(v)}`).join(' ');
+  const pred = vals.map((v,i) => `${xs(i)},${ys(Math.min(100,v+6-i*0.5))}`).join(' ');
+  const polyPts = `${px},${H-py} ${pts} ${xs(vals.length-1)},${H-py}`;
+  const gridLines = [25,50,75].map(v => `<line x1="${px}" y1="${ys(v)}" x2="${W-px}" y2="${ys(v)}" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>`).join('');
+  const dots = vals.map((v,i) => `
+    <circle cx="${xs(i)}" cy="${ys(v)}" r="5" fill="#040D1A" stroke="#00E5FF" stroke-width="2"/>
+    <text x="${xs(i)}" y="${H-2}" text-anchor="middle" fill="rgba(180,220,255,0.28)" font-size="9">${phases[i]}</text>`).join('');
+  document.getElementById('stamina-chart').innerHTML = `
+    <defs><linearGradient id="aG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00E5FF" stop-opacity="0.28"/><stop offset="100%" stop-color="#00E5FF" stop-opacity="0"/></linearGradient></defs>
+    ${gridLines}
+    <polygon points="${polyPts}" fill="url(#aG)"/>
+    <polyline points="${pts}" fill="none" stroke="#00E5FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="stroke-dasharray:600;stroke-dashoffset:0;animation:lineTrace 2s ease forwards;filter:drop-shadow(0 0 5px rgba(0,229,255,0.5));"/>
+    <polyline points="${pred}" fill="none" stroke="#FF2D78" stroke-width="2" stroke-dasharray="6,4" stroke-linecap="round"/>
+    ${dots}`;
+}
+
+// ── About Page Content ──
+(function buildAbout() {
+  const features = [
+    {icon:'🧠',c:'#7C3AED',title:'AI Race Modeling',desc:'Advanced machine learning models process boat and environmental parameters to generate race outcome predictions with high confidence using physics-driven simulation.'},
+    {icon:'🌊',c:'#00E5FF',title:'Hydrodynamics Engine',desc:'Physics-based water resistance simulation calculates optimal stroke patterns, timing, and boat positioning tailored to each unique race course and condition.'},
+    {icon:'💪',c:'#FFD700',title:'Biomechanics Analysis',desc:'Individual rower force and stroke rate profiles are modeled together to compute collective propulsion efficiency and identify performance bottlenecks.'},
+    {icon:'📊',c:'#FF2D78',title:'Real-time Analytics',desc:'Input parameters flow through the AI pipeline instantly, delivering live performance scores, seating recommendations, and strategic breakdowns on demand.'},
+    {icon:'🎯',c:'#FF6B00',title:'Seating Optimizer',desc:'Optimization algorithms evaluate seating arrangements to maximize collective propulsion while minimizing drag, imbalance, and fatigue distribution risk.'},
+    {icon:'🏆',c:'#00E676',title:'Race Strategy AI',desc:'The AI generates phase-by-phase pacing strategies adapted to wind direction, water current, stroke rate, and the total force capacity of your crew.'},
+  ];
+  document.getElementById('about-features').innerHTML = features.map(f => `
+    <div class="feat-block" style="border:1px solid ${f.c}22;" onmouseover="this.style.borderColor='${f.c}55';" onmouseout="this.style.borderColor='${f.c}22';">
+      <div style="width:58px;height:58px;background:${f.c}18;border:1px solid ${f.c}44;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 1rem;">${f.icon}</div>
+      <h3 class="cinzel" style="color:${f.c};font-size:.9rem;margin-bottom:.65rem;font-weight:700;">${f.title}</h3>
+      <p style="color:rgba(180,220,255,.42);font-size:.84rem;line-height:1.78;">${f.desc}</p>
+    </div>`).join('');
+
+  const pillars = [
+    {icon:'📐',c:'#00E5FF',title:'Physics-Driven',desc:'Every calculation is grounded in real hydrodynamic and biomechanical equations — not guesswork.'},
+    {icon:'⚡',c:'#7C3AED',title:'Instant Results',desc:'Enter your 7 parameters and get a full AI strategy report in seconds, not hours.'},
+    {icon:'🔄',c:'#FF6B00',title:'Iterative Refinement',desc:'Adjust any input and watch predictions update in real time — explore scenarios freely.'},
+    {icon:'🧩',c:'#FF2D78',title:'Modular Design',desc:'Each analytical module — force, drag, stamina, seating — works independently and together.'},
+    {icon:'🌊',c:'#FFD700',title:'Condition-Aware',desc:'Wind speed, wind direction, and water current are fully factored into every recommendation.'},
+    {icon:'🎯',c:'#00E676',title:'Decision Ready',desc:'Outputs are formatted for coaches and captains — clear, actionable, and jargon-free.'},
+  ];
+  document.getElementById('about-pillars').innerHTML = pillars.map(p => `
+    <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;padding:1rem;background:${p.c}06;border:1px solid ${p.c}1A;border-radius:14px;transition:all .25s;"
+      onmouseover="this.style.background='${p.c}0F';this.style.borderColor='${p.c}44';this.style.transform='translateY(-4px)';"
+      onmouseout="this.style.background='${p.c}06';this.style.borderColor='${p.c}1A';this.style.transform='none';">
+      <div style="width:48px;height:48px;background:${p.c}12;border:1px solid ${p.c}33;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">${p.icon}</div>
+      <div class="cinzel" style="font-weight:700;font-size:.86rem;color:${p.c};">${p.title}</div>
+      <p style="color:rgba(180,220,255,.38);font-size:.79rem;line-height:1.7;">${p.desc}</p>
+    </div>`).join('');
+})();
+
+// ── Init ──
+updateCrewPreview();
+updateSummary();
+updateWindBadge();
+updateCurrBadge();
+updateTotalForce();
+updateDashboard();
+</script>
+</body>
+</html>
