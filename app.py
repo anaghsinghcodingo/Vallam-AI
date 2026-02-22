@@ -127,7 +127,7 @@ def home():
         }
     })
 
-@app.route("/simulate", methods=["GET"])
+@app.route("/simulate", methods=["POST"])
 def simulate():
 
     data = request.json
