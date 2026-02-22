@@ -1,4 +1,4 @@
-# 🐍 Vallam Kali Simulation Engine
+# 🐍 VallamAI
 
 A simple physics-based simulation engine that predicts the performance of a snake boat (Vallam Kali). This tool allows users to input boat details, crew strength, and weather conditions to estimate race time and boat speed.
 
