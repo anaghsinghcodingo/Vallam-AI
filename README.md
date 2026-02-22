@@ -26,42 +26,10 @@ This project was built as part of a hackathon to demonstrate how physics and pro
 - Gunicorn
 - NumPy
 
-Install NumPy using:
+Install Dependencies using:
 
 ```bash
-pip install numpy
-```
-
----
-
-# ▶️ How to Run
-
-Run the simulation file:
-
-```bash
-python app.py
-```
-
-Enter the required values when prompted.
-
-Example:
-
-```
-Enter boat length (meters): 30
-Enter number of rowers: 50
-Enter force per rower (Newtons): 320
-Enter stroke rate (strokes/min): 32
-Enter wind speed (m/s): 3
-Enter wind direction (1=tailwind, -1=headwind): 1
-Enter water current speed (m/s): 0.4
-```
-
-Output:
-
-```
---- Simulation Result ---
-Race time: 212.34 seconds
-Final velocity: 5.21 m/s
+pip install requirements.txt
 ```
 
 ---
@@ -105,12 +73,12 @@ This simulation calculates how fast a snake boat can complete a race based on:
 
 # 👤 Author
 
-Vitthal Singh
-Anagh Singh
-Simran Singh
-Varnika Gupta
-Navya Chawla
-**Critical Hit🔥🔥**
+- Vitthal Singh
+- Anagh Singh
+- Simran Singh
+- Varnika Gupta
+- Navya Chawla
+- **Critical Hit🔥🔥**
 
 ---
 ---
