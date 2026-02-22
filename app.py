@@ -98,15 +98,13 @@ Max Velocity: {simulation_result['max_velocity']} m/s
 Final Fatigue Factor: {simulation_result['final_fatigue_factor']}
 """
 
-model = genai.GenerativeModel(
-            "gemma-3-27b-it",
-            generation_config={
-                "temperature": 0.7,
-                "top_p": 0.8,
-                "top_k": 40,
-                "max_output_tokens": 2048,
-            }
-        )
+    model = genai.GenerativeModel(
+        "gemini-1.5-flash",
+        generation_config={
+            "temperature": 0.3,
+            "max_output_tokens": 250,
+        }
+    )
     response = model.generate_content(prompt)
 
     return response.text
