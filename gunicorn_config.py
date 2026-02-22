@@ -1,4 +1,3 @@
-@@ -1,26 +0,0 @@
 # Gunicorn configuration file for VallamAI
 
 bind = "0.0.0.0:5000"
