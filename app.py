@@ -86,13 +86,11 @@ def run_simulation(data):
 # -------------------------------
 def generate_ai_analysis(simulation_result):
 
-    system_prompt = """
+    prompt = f"""
 You are VallamAI, an AI performance analyst for Kerala’s snake boat race.
 Keep response under 120 words.
 Be analytical and structured.
-"""
 
-    user_prompt = f"""
 Race Time: {simulation_result['race_time']} sec
 Final Velocity: {simulation_result['final_velocity']} m/s
 Average Velocity: {simulation_result['average_velocity']} m/s
@@ -100,13 +98,17 @@ Max Velocity: {simulation_result['max_velocity']} m/s
 Final Fatigue Factor: {simulation_result['final_fatigue_factor']}
 """
 
-  model = genai.GenerativeModel(
-        "gemma-3-27b-it",
+    model = genai.GenerativeModel(
+        "gemini-1.5-flash",
         generation_config={
             "temperature": 0.3,
             "max_output_tokens": 250,
         }
     )
+
+    response = model.generate_content(prompt)
+
+    return response.text
 
     response = model.generate_content(system_prompt + user_prompt)
 
