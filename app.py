@@ -108,7 +108,7 @@ Final Fatigue Factor: {simulation_result['final_fatigue_factor']}
                 "max_output_tokens": 2048,
             }
         )
-        response = model.generate_content(prompt)
+            response = model.generate_content(prompt)
         return response.text
     except Exception as e:
         print(f"Gemini API Error: {e}")
